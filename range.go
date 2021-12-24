@@ -10,62 +10,62 @@ import (
 const defaultRangeFmt = "2006-01-02 15:04:05.999999999 -0700 MST"
 
 // Option is an adapter over date ranges.
-type Option func(r *DateRange)
+type Option func(r *Range)
 
 // In sets the time range in the given location.
 func In(loc *time.Location) Option {
-	return func(r *DateRange) { r.st = r.st.In(loc) }
+	return func(r *Range) { r.st = r.st.In(loc) }
 }
 
-// Range returns the new DateRange in the given time bounds.
-// DateRange will get the location of the start timestamp.
-func Range(start, end time.Time, opts ...Option) DateRange {
+// New returns the new Range in the given time bounds.
+// Range will get the location of the start timestamp.
+func New(start, end time.Time, opts ...Option) Range {
 	if start.After(end) {
 		panic("start is after the end")
 	}
 
-	res := DateRange{st: start, dur: end.Sub(start)}
+	res := Range{st: start, dur: end.Sub(start)}
 	for _, opt := range opts {
 		opt(&res)
 	}
 	return res
 }
 
-// DateRange represents time slot with its own start and end time boundaries
-type DateRange struct {
+// Range represents time slot with its own start and end time boundaries
+type Range struct {
 	st  time.Time
 	dur time.Duration
 }
 
-// String implements fmt.Stringer to print and log DateRange properly
-func (r DateRange) String() string { return r.UTC().Format(defaultRangeFmt) }
+// String implements fmt.Stringer to print and log Range properly
+func (r Range) String() string { return r.UTC().Format(defaultRangeFmt) }
 
 // UTC returns the date range with boundaries in UTC.
-func (r DateRange) UTC() DateRange { return r.In(time.UTC) }
+func (r Range) UTC() Range { return r.In(time.UTC) }
 
 // Duration returns the duration of the date range.
-func (r DateRange) Duration() time.Duration { return r.dur }
+func (r Range) Duration() time.Duration { return r.dur }
 
 // Start returns the start time of the date range.
-func (r DateRange) Start() time.Time { return r.st }
+func (r Range) Start() time.Time { return r.st }
 
 // End returns the end time of the date range.
-func (r DateRange) End() time.Time { return r.st.Add(r.dur) }
+func (r Range) End() time.Time { return r.st.Add(r.dur) }
 
 // In returns the date range with boundaries in the provided location's time zone.
-func (r DateRange) In(loc *time.Location) DateRange { return DateRange{st: r.st.In(loc), dur: r.dur} }
+func (r Range) In(loc *time.Location) Range { return Range{st: r.st.In(loc), dur: r.dur} }
 
 // Empty returns true if the date range is empty.
-func (r DateRange) Empty() bool { return r.st.IsZero() && r.dur == 0 }
+func (r Range) Empty() bool { return r.st.IsZero() && r.dur == 0 }
 
 // Format returns the string representation of the time range with the given format.
-func (r DateRange) Format(layout string) string {
+func (r Range) Format(layout string) string {
 	return fmt.Sprintf("[%s, %s]", r.st.Format(layout), r.End().Format(layout))
 }
 
 // Split the date range into smaller ranges, with fixed duration and with the
 // given interval between the *end* of the one range and *start* of next range.
-func (r DateRange) Split(duration time.Duration, interval time.Duration) []DateRange {
+func (r Range) Split(duration time.Duration, interval time.Duration) []Range {
 	if duration == 0 {
 		panic("cannot split with zero duration")
 	}
@@ -74,17 +74,17 @@ func (r DateRange) Split(duration time.Duration, interval time.Duration) []DateR
 
 // Stratify the date range into smaller ranges, with fixed duration and with the
 // given interval between the *starts* of the resulting ranges.
-func (r DateRange) Stratify(duration time.Duration, interval time.Duration) []DateRange {
+func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range {
 	if interval == 0 || duration == 0 {
 		panic("cannot stratify with zero duration or zero interval")
 	}
 
-	var res []DateRange
+	var res []Range
 	rangeEnd := r.End()
 	rangeStart := r.st
 
 	for rangeEnd.Sub(rangeStart.Add(duration)) >= 0 {
-		res = append(res, DateRange{st: rangeStart, dur: duration})
+		res = append(res, Range{st: rangeStart, dur: duration})
 		rangeStart = rangeStart.Add(interval)
 	}
 
@@ -92,7 +92,7 @@ func (r DateRange) Stratify(duration time.Duration, interval time.Duration) []Da
 }
 
 // Contains returns true if the other date range is within this date range.
-func (r DateRange) Contains(other DateRange) bool {
+func (r Range) Contains(other Range) bool {
 	if (r.st.Before(other.st) || r.st.Equal(other.st)) &&
 		(r.End().After(other.End()) || r.End().Equal(other.End())) {
 		return true
@@ -102,16 +102,16 @@ func (r DateRange) Contains(other DateRange) bool {
 
 // Truncate returns the date range bounded to the *bounds*, i.e. it cuts
 // the start and the end of *r* to fit into the *bounds*.
-func (r DateRange) Truncate(bounds DateRange) DateRange {
+func (r Range) Truncate(bounds Range) Range {
 	switch {
 	case r.st.Before(bounds.st) && r.End().Before(bounds.st):
 		// -XXX-----
 		// -----YYY-
-		return DateRange{}
+		return Range{}
 	case r.st.After(bounds.End()) && r.End().After(bounds.End()):
 		// -----XXX-
 		// -YYY-----
-		return DateRange{}
+		return Range{}
 	case r.Contains(bounds):
 		// -XXXXXXX-
 		// ---YYY---
@@ -123,11 +123,11 @@ func (r DateRange) Truncate(bounds DateRange) DateRange {
 	case r.st.Before(bounds.st) && r.End().Before(bounds.End()):
 		// ---XXX---
 		// ----YYY--
-		return DateRange{st: bounds.st, dur: r.End().Sub(bounds.st)}
+		return Range{st: bounds.st, dur: r.End().Sub(bounds.st)}
 	case r.st.After(bounds.st) && r.End().After(bounds.End()):
 		// ---XXX---
 		// --YYY----
-		return DateRange{st: r.st, dur: bounds.End().Sub(r.st)}
+		return Range{st: r.st, dur: bounds.End().Sub(r.st)}
 	default:
 		panic("should never happen")
 	}
@@ -138,9 +138,9 @@ func (r DateRange) Truncate(bounds DateRange) DateRange {
 // The boundaries of the given ranges are considered to be inclusive, means
 // that the flipped ranges will start or end at the exact nanosecond where
 // the boundary from the input starts or ends.
-func (r DateRange) FlipDateRanges(ranges []DateRange) []DateRange {
+func (r Range) FlipDateRanges(ranges []Range) []Range {
 	if len(ranges) == 0 {
-		return []DateRange{r}
+		return []Range{r}
 	}
 
 	// to exclude the case of distinct ranges, ranges not within the period
@@ -150,22 +150,22 @@ func (r DateRange) FlipDateRanges(ranges []DateRange) []DateRange {
 	return r.flipValidRanges(rngs)
 }
 
-func (r DateRange) flipValidRanges(ranges []DateRange) []DateRange {
-	var res []DateRange
+func (r Range) flipValidRanges(ranges []Range) []Range {
+	var res []Range
 
 	// add the gap between the start of the period and start of the first range
 	if !r.st.Equal(ranges[0].st) {
-		res = append(res, DateRange{st: r.st, dur: ranges[0].st.Sub(r.st)})
+		res = append(res, Range{st: r.st, dur: ranges[0].st.Sub(r.st)})
 	}
 
 	// skip first range
 	for i := 1; i < len(ranges); i++ {
-		res = append(res, DateRange{st: ranges[i-1].End(), dur: ranges[i].st.Sub(ranges[i-1].End())})
+		res = append(res, Range{st: ranges[i-1].End(), dur: ranges[i].st.Sub(ranges[i-1].End())})
 	}
 
 	// add the gap between the end of the last range and end of the period
 	if !r.End().Equal(ranges[len(ranges)-1].End()) {
-		res = append(res, DateRange{st: ranges[len(ranges)-1].End(), dur: r.End().Sub(ranges[len(ranges)-1].End())})
+		res = append(res, Range{st: ranges[len(ranges)-1].End(), dur: r.End().Sub(ranges[len(ranges)-1].End())})
 	}
 
 	return res

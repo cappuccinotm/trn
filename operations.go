@@ -6,9 +6,9 @@ import (
 )
 
 // Intersection returns the date range, which is common for all the given ranges.
-func Intersection(ranges []DateRange) DateRange {
+func Intersection(ranges []Range) Range {
 	if len(ranges) == 0 {
-		return DateRange{}
+		return Range{}
 	}
 
 	resRange := ranges[0]
@@ -22,8 +22,8 @@ func Intersection(ranges []DateRange) DateRange {
 
 // MergeOverlappingRanges looks in the ranges slice, seeks for overlapping ranges and
 // merges such ranges into the one range.
-func MergeOverlappingRanges(ranges []DateRange) []DateRange {
-	var res []DateRange
+func MergeOverlappingRanges(ranges []Range) []Range {
+	var res []Range
 
 	boundaries := rangesToBoundaries(ranges)
 	// sorting boundaries by time
@@ -55,20 +55,20 @@ func MergeOverlappingRanges(ranges []DateRange) []DateRange {
 		unfinishedBoundariesCnt--
 		// if this is an ending boundary and there is where the merged range ends...
 		if unfinishedBoundariesCnt == 0 {
-			res = append(res, DateRange{st: rangeStartTm, dur: boundary.tm.Sub(rangeStartTm)})
+			res = append(res, Range{st: rangeStartTm, dur: boundary.tm.Sub(rangeStartTm)})
 		}
 	}
 
 	// process the last boundary, it must be the end boundary anyway
 	unfinishedBoundariesCnt--
 	if unfinishedBoundariesCnt == 0 {
-		res = append(res, DateRange{st: rangeStartTm, dur: boundaries[len(boundaries)-1].tm.Sub(rangeStartTm)})
+		res = append(res, Range{st: rangeStartTm, dur: boundaries[len(boundaries)-1].tm.Sub(rangeStartTm)})
 	}
 
 	return res
 }
 
-func rangesToBoundaries(ranges []DateRange) []*timeRangeBoundary {
+func rangesToBoundaries(ranges []Range) []*timeRangeBoundary {
 	res := make([]*timeRangeBoundary, len(ranges)*2)
 	for i, rng := range ranges {
 		res[i*2] = &timeRangeBoundary{tm: rng.st, typ: boundaryStart}
