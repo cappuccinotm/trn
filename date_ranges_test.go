@@ -60,63 +60,63 @@ func TestDateRange_Truncate(t *testing.T) {
 	}{
 		{
 			name:   "doesn't intersect (earlier)",
-			rng:    DateRange{Start: tm(13, 0), End: tm(14, 0)}, // -XXX-----
-			bounds: DateRange{Start: tm(15, 0), End: tm(16, 0)}, // -----YYY-
+			rng:    Range(tm(13, 0), tm(14, 0)), // -XXX-----
+			bounds: Range(tm(15, 0), tm(16, 0)), // -----YYY-
 			want:   DateRange{},
 		},
 		{
 			name:   "doesn't intersect (later)",
-			rng:    DateRange{Start: tm(15, 0), End: tm(16, 0)}, // -----XXX-
-			bounds: DateRange{Start: tm(13, 0), End: tm(14, 0)}, // -YYY-----
+			rng:    Range(tm(15, 0), tm(16, 0)), // -----XXX-
+			bounds: Range(tm(13, 0), tm(14, 0)), // -YYY-----
 			want:   DateRange{},
 		},
 		{
 			name:   "overlaps the bounds",
-			rng:    DateRange{Start: tm(13, 0), End: tm(16, 0)}, // -XXXXXXX-
-			bounds: DateRange{Start: tm(14, 0), End: tm(15, 0)}, // ---YYY---
-			want:   DateRange{Start: tm(14, 0), End: tm(15, 0)},
+			rng:    Range(tm(13, 0), tm(16, 0)), // -XXXXXXX-
+			bounds: Range(tm(14, 0), tm(15, 0)), // ---YYY---
+			want:   Range(tm(14, 0), tm(15, 0)),
 		},
 		{
 			name:   "bounds overlap",
-			rng:    DateRange{Start: tm(14, 0), End: tm(15, 0)}, // ---XXX---
-			bounds: DateRange{Start: tm(13, 0), End: tm(16, 0)}, // -YYYYYYY-
-			want:   DateRange{Start: tm(14, 0), End: tm(15, 0)},
+			rng:    Range(tm(14, 0), tm(15, 0)), // ---XXX---
+			bounds: Range(tm(13, 0), tm(16, 0)), // -YYYYYYY-
+			want:   Range(tm(14, 0), tm(15, 0)),
 		},
 		{
 			name:   "intersect, bound end later",
-			rng:    DateRange{Start: tm(13, 0), End: tm(15, 0)}, // ---XXX---
-			bounds: DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ----YYY--
-			want:   DateRange{Start: tm(14, 0), End: tm(15, 0)},
+			rng:    Range(tm(13, 0), tm(15, 0)), // ---XXX---
+			bounds: Range(tm(14, 0), tm(16, 0)), // ----YYY--
+			want:   Range(tm(14, 0), tm(15, 0)),
 		},
 		{
 			name:   "overlaps, starts are equal",
-			rng:    DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --XXXX---
-			bounds: DateRange{Start: tm(13, 0), End: tm(15, 0)}, // --YYY----
-			want:   DateRange{Start: tm(13, 0), End: tm(15, 0)},
+			rng:    Range(tm(13, 0), tm(16, 0)), // --XXXX---
+			bounds: Range(tm(13, 0), tm(15, 0)), // --YYY----
+			want:   Range(tm(13, 0), tm(15, 0)),
 		},
 		{
 			name:   "bounds overlap, starts are equal",
-			rng:    DateRange{Start: tm(13, 0), End: tm(15, 0)}, // --XXX----
-			bounds: DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --YYYY---
-			want:   DateRange{Start: tm(13, 0), End: tm(15, 0)},
+			rng:    Range(tm(13, 0), tm(15, 0)), // --XXX----
+			bounds: Range(tm(13, 0), tm(16, 0)), // --YYYY---
+			want:   Range(tm(13, 0), tm(15, 0)),
 		},
 		{
 			name:   "overlaps, ends are equal",
-			rng:    DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --XXXX---
-			bounds: DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ---YYY---
-			want:   DateRange{Start: tm(14, 0), End: tm(16, 0)},
+			rng:    Range(tm(13, 0), tm(16, 0)), // --XXXX---
+			bounds: Range(tm(14, 0), tm(16, 0)), // ---YYY---
+			want:   Range(tm(14, 0), tm(16, 0)),
 		},
 		{
 			name:   "bounds overlap, ends are equal",
-			rng:    DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ---XXX---
-			bounds: DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --YYYY---
-			want:   DateRange{Start: tm(14, 0), End: tm(16, 0)},
+			rng:    Range(tm(14, 0), tm(16, 0)), // ---XXX---
+			bounds: Range(tm(13, 0), tm(16, 0)), // --YYYY---
+			want:   Range(tm(14, 0), tm(16, 0)),
 		},
 		{
 			name:   "intersect, bound end earlier",
-			rng:    DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ---XXX---
-			bounds: DateRange{Start: tm(13, 0), End: tm(15, 0)}, // --YYY----
-			want:   DateRange{Start: tm(14, 0), End: tm(15, 0)},
+			rng:    Range(tm(14, 0), tm(16, 0)), // ---XXX---
+			bounds: Range(tm(13, 0), tm(15, 0)), // --YYY----
+			want:   Range(tm(14, 0), tm(15, 0)),
 		},
 	}
 	for _, tt := range tests {
@@ -140,62 +140,62 @@ func TestDateRange_Contains(t *testing.T) {
 	}{
 		{
 			name:  "doesn't intersect (earlier)",
-			rng:   DateRange{Start: tm(13, 0), End: tm(14, 0)}, // -XXX-----
-			other: DateRange{Start: tm(15, 0), End: tm(16, 0)}, // -----YYY-
+			rng:   Range(tm(13, 0), tm(14, 0)), // -XXX-----
+			other: Range(tm(15, 0), tm(16, 0)), // -----YYY-
 			want:  false,
 		},
 		{
 			name:  "doesn't intersect (later)",
-			rng:   DateRange{Start: tm(15, 0), End: tm(16, 0)}, // -----XXX-
-			other: DateRange{Start: tm(13, 0), End: tm(14, 0)}, // -YYY-----
+			rng:   Range(tm(15, 0), tm(16, 0)), // -----XXX-
+			other: Range(tm(13, 0), tm(14, 0)), // -YYY-----
 			want:  false,
 		},
 		{
 			name:  "overlaps the bounds",
-			rng:   DateRange{Start: tm(13, 0), End: tm(16, 0)}, // -XXXXXXX-
-			other: DateRange{Start: tm(14, 0), End: tm(15, 0)}, // ---YYY---
+			rng:   Range(tm(13, 0), tm(16, 0)), // -XXXXXXX-
+			other: Range(tm(14, 0), tm(15, 0)), // ---YYY---
 			want:  true,
 		},
 		{
 			name:  "bounds overlap",
-			rng:   DateRange{Start: tm(14, 0), End: tm(15, 0)}, // ---XXX---
-			other: DateRange{Start: tm(13, 0), End: tm(16, 0)}, // -YYYYYYY-
+			rng:   Range(tm(14, 0), tm(15, 0)), // ---XXX---
+			other: Range(tm(13, 0), tm(16, 0)), // -YYYYYYY-
 			want:  false,
 		},
 		{
 			name:  "intersect, bound end later",
-			rng:   DateRange{Start: tm(13, 0), End: tm(15, 0)}, // ---XXX---
-			other: DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ----YYY--
+			rng:   Range(tm(13, 0), tm(15, 0)), // ---XXX---
+			other: Range(tm(14, 0), tm(16, 0)), // ----YYY--
 			want:  false,
 		},
 		{
 			name:  "overlaps, starts are equal",
-			rng:   DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --XXXX---
-			other: DateRange{Start: tm(13, 0), End: tm(15, 0)}, // --YYY----
+			rng:   Range(tm(13, 0), tm(16, 0)), // --XXXX---
+			other: Range(tm(13, 0), tm(15, 0)), // --YYY----
 			want:  true,
 		},
 		{
 			name:  "bounds overlap, starts are equal",
-			rng:   DateRange{Start: tm(13, 0), End: tm(15, 0)}, // --XXX----
-			other: DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --YYYY---
+			rng:   Range(tm(13, 0), tm(15, 0)), // --XXX----
+			other: Range(tm(13, 0), tm(16, 0)), // --YYYY---
 			want:  false,
 		},
 		{
 			name:  "overlaps, ends are equal",
-			rng:   DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --XXXX---
-			other: DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ---YYY---
+			rng:   Range(tm(13, 0), tm(16, 0)), // --XXXX---
+			other: Range(tm(14, 0), tm(16, 0)), // ---YYY---
 			want:  true,
 		},
 		{
 			name:  "bounds overlap, ends are equal",
-			rng:   DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ---XXX---
-			other: DateRange{Start: tm(13, 0), End: tm(16, 0)}, // --YYYY---
+			rng:   Range(tm(14, 0), tm(16, 0)), // ---XXX---
+			other: Range(tm(13, 0), tm(16, 0)), // --YYYY---
 			want:  false,
 		},
 		{
 			name:  "intersect, bound end earlier",
-			rng:   DateRange{Start: tm(14, 0), End: tm(16, 0)}, // ---XXX---
-			other: DateRange{Start: tm(13, 0), End: tm(15, 0)}, // --YYY----
+			rng:   Range(tm(14, 0), tm(16, 0)), // ---XXX---
+			other: Range(tm(13, 0), tm(15, 0)), // --YYY----
 			want:  false,
 		},
 	}
@@ -220,50 +220,50 @@ func TestDateRange_Stratify(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  DateRange{Start: tm(1, 34), End: tm(2, 44)},
+			rng:  Range(tm(1, 34), tm(2, 44)),
 			args: args{
 				offset:   6 * time.Minute,
 				duration: 30 * time.Minute,
 				interval: 5 * time.Minute,
 			},
 			want: []DateRange{
-				{Start: tm(1, 40), End: tm(2, 10)},
-				{Start: tm(1, 45), End: tm(2, 15)},
-				{Start: tm(1, 50), End: tm(2, 20)},
-				{Start: tm(1, 55), End: tm(2, 25)},
-				{Start: tm(2, 00), End: tm(2, 30)},
-				{Start: tm(2, 05), End: tm(2, 35)},
-				{Start: tm(2, 10), End: tm(2, 40)},
+				Range(tm(1, 40), tm(2, 10)),
+				Range(tm(1, 45), tm(2, 15)),
+				Range(tm(1, 50), tm(2, 20)),
+				Range(tm(1, 55), tm(2, 25)),
+				Range(tm(2, 00), tm(2, 30)),
+				Range(tm(2, 05), tm(2, 35)),
+				Range(tm(2, 10), tm(2, 40)),
 			},
 		},
 		{
 			name: "without space left at end",
-			rng:  DateRange{Start: tm(1, 34), End: tm(2, 40)},
+			rng:  Range(tm(1, 34), tm(2, 40)),
 			args: args{
 				offset:   6 * time.Minute,
 				duration: 30 * time.Minute,
 				interval: 5 * time.Minute,
 			},
 			want: []DateRange{
-				{Start: tm(1, 40), End: tm(2, 10)},
-				{Start: tm(1, 45), End: tm(2, 15)},
-				{Start: tm(1, 50), End: tm(2, 20)},
-				{Start: tm(1, 55), End: tm(2, 25)},
-				{Start: tm(2, 00), End: tm(2, 30)},
-				{Start: tm(2, 05), End: tm(2, 35)},
-				{Start: tm(2, 10), End: tm(2, 40)},
+				Range(tm(1, 40), tm(2, 10)),
+				Range(tm(1, 45), tm(2, 15)),
+				Range(tm(1, 50), tm(2, 20)),
+				Range(tm(1, 55), tm(2, 25)),
+				Range(tm(2, 00), tm(2, 30)),
+				Range(tm(2, 05), tm(2, 35)),
+				Range(tm(2, 10), tm(2, 40)),
 			},
 		},
 		{
 			name: "zero offset",
-			rng:  DateRange{Start: tm(1, 30), End: tm(2, 0)},
+			rng:  Range(tm(1, 30), tm(2, 0)),
 			args: args{duration: 10 * time.Minute, interval: 5 * time.Minute},
 			want: []DateRange{
-				{Start: tm(1, 30), End: tm(1, 40)},
-				{Start: tm(1, 35), End: tm(1, 45)},
-				{Start: tm(1, 40), End: tm(1, 50)},
-				{Start: tm(1, 45), End: tm(1, 55)},
-				{Start: tm(1, 50), End: tm(2, 0)},
+				Range(tm(1, 30), tm(1, 40)),
+				Range(tm(1, 35), tm(1, 45)),
+				Range(tm(1, 40), tm(1, 50)),
+				Range(tm(1, 45), tm(1, 55)),
+				Range(tm(1, 50), tm(2, 0)),
 			},
 		},
 	}
@@ -289,42 +289,42 @@ func TestDateRange_Split(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  DateRange{Start: tm(1, 34), End: tm(3, 0)},
+			rng:  Range(tm(1, 34), tm(3, 0)),
 			args: args{
 				offset:   6 * time.Minute,
 				duration: 30 * time.Minute,
 				interval: 5 * time.Minute,
 			},
 			want: []DateRange{
-				{Start: tm(1, 40), End: tm(2, 10)},
-				{Start: tm(2, 15), End: tm(2, 45)},
+				Range(tm(1, 40), tm(2, 10)),
+				Range(tm(2, 15), tm(2, 45)),
 			},
 		},
 		{
 			name: "without space left at end",
-			rng:  DateRange{Start: tm(1, 34), End: tm(3, 20)},
+			rng:  Range(tm(1, 34), tm(3, 20)),
 			args: args{
 				offset:   6 * time.Minute,
 				duration: 30 * time.Minute,
 				interval: 5 * time.Minute,
 			},
 			want: []DateRange{
-				{Start: tm(1, 40), End: tm(2, 10)},
-				{Start: tm(2, 15), End: tm(2, 45)},
-				{Start: tm(2, 50), End: tm(3, 20)},
+				Range(tm(1, 40), tm(2, 10)),
+				Range(tm(2, 15), tm(2, 45)),
+				Range(tm(2, 50), tm(3, 20)),
 			},
 		},
 		{
 			name: "zero offset and interval",
-			rng:  DateRange{Start: tm(1, 30), End: tm(2, 0)},
+			rng:  Range(tm(1, 30), tm(2, 0)),
 			args: args{duration: 5 * time.Minute},
 			want: []DateRange{
-				{Start: tm(1, 30), End: tm(1, 35)},
-				{Start: tm(1, 35), End: tm(1, 40)},
-				{Start: tm(1, 40), End: tm(1, 45)},
-				{Start: tm(1, 45), End: tm(1, 50)},
-				{Start: tm(1, 50), End: tm(1, 55)},
-				{Start: tm(1, 55), End: tm(2, 0)},
+				Range(tm(1, 30), tm(1, 35)),
+				Range(tm(1, 35), tm(1, 40)),
+				Range(tm(1, 40), tm(1, 45)),
+				Range(tm(1, 45), tm(1, 50)),
+				Range(tm(1, 50), tm(1, 55)),
+				Range(tm(1, 55), tm(2, 0)),
 			},
 		},
 	}
@@ -345,83 +345,83 @@ func TestMergeOverlappingRanges(t *testing.T) {
 		{
 			name: "ranges don't overlap",
 			args: []DateRange{
-				{Start: tm(13, 0), End: tm(14, 0)},
-				{Start: tm(15, 0), End: tm(16, 0)},
+				Range(tm(13, 0), tm(14, 0)),
+				Range(tm(15, 0), tm(16, 0)),
 			},
 			want: []DateRange{
-				{Start: tm(13, 0), End: tm(14, 0)},
-				{Start: tm(15, 0), End: tm(16, 0)},
+				Range(tm(13, 0), tm(14, 0)),
+				Range(tm(15, 0), tm(16, 0)),
 			},
 		},
 		{
 			name: "ranges intersect",
 			args: []DateRange{
-				{Start: tm(13, 0), End: tm(14, 0)},
-				{Start: tm(13, 30), End: tm(15, 0)},
+				Range(tm(13, 0), tm(14, 0)),
+				Range(tm(13, 30), tm(15, 0)),
 			},
 			want: []DateRange{
-				{Start: tm(13, 0), End: tm(15, 0)},
+				Range(tm(13, 0), tm(15, 0)),
 			},
 		},
 		{
 			name: "one range eternally overlaps the other",
 			args: []DateRange{
-				{Start: tm(13, 0), End: tm(15, 0)},
-				{Start: tm(13, 30), End: tm(14, 30)},
+				Range(tm(13, 0), tm(15, 0)),
+				Range(tm(13, 30), tm(14, 30)),
 			},
 			want: []DateRange{
-				{Start: tm(13, 0), End: tm(15, 0)},
+				Range(tm(13, 0), tm(15, 0)),
 			},
 		},
 		{
 			name: "boundaries of two ranges are equal",
 			args: []DateRange{
-				{Start: tm(13, 0), End: tm(13, 15)},
-				{Start: tm(13, 15), End: tm(13, 30)},
+				Range(tm(13, 0), tm(13, 15)),
+				Range(tm(13, 15), tm(13, 30)),
 			},
 			want: []DateRange{
-				{Start: tm(13, 0), End: tm(13, 30)},
+				Range(tm(13, 0), tm(13, 30)),
 			},
 		},
 		{
 			name: "complex test",
 			args: []DateRange{
 				// next three ranges must be merged (last two are within the first one)
-				{Start: tm(19, 0), End: tm(19, 30)},
-				{Start: tm(19, 1), End: tm(19, 15)},
-				{Start: tm(19, 8), End: tm(19, 17)},
+				Range(tm(19, 0), tm(19, 30)),
+				Range(tm(19, 1), tm(19, 15)),
+				Range(tm(19, 8), tm(19, 17)),
 				// next second range must be removed (end of first = end of second)
-				{Start: tm(15, 0), End: tm(15, 30)},
-				{Start: tm(15, 16), End: tm(15, 30)},
+				Range(tm(15, 0), tm(15, 30)),
+				Range(tm(15, 16), tm(15, 30)),
 				// next two ranges must NOT be merged
-				{Start: tm(12, 0), End: tm(12, 15)},
-				{Start: tm(12, 30), End: tm(12, 45)},
+				Range(tm(12, 0), tm(12, 15)),
+				Range(tm(12, 30), tm(12, 45)),
 				// next two ranges must be merged (end of the first = start of the second)
-				{Start: tm(13, 0), End: tm(13, 15)},
-				{Start: tm(13, 15), End: tm(13, 30)},
+				Range(tm(13, 0), tm(13, 15)),
+				Range(tm(13, 15), tm(13, 30)),
 				// next two ranges must be merged
-				{Start: tm(14, 0), End: tm(14, 16)},
-				{Start: tm(14, 15), End: tm(14, 30)},
+				Range(tm(14, 0), tm(14, 16)),
+				Range(tm(14, 15), tm(14, 30)),
 				// next second range must be removed (start of first = start of second)
-				{Start: tm(16, 0), End: tm(16, 30)},
-				{Start: tm(16, 0), End: tm(16, 16)},
+				Range(tm(16, 0), tm(16, 30)),
+				Range(tm(16, 0), tm(16, 16)),
 				// next second range must be removed (ranges are equal)
-				{Start: tm(17, 0), End: tm(17, 30)},
-				{Start: tm(17, 0), End: tm(17, 30)},
+				Range(tm(17, 0), tm(17, 30)),
+				Range(tm(17, 0), tm(17, 30)),
 				// next second range must be removed
-				{Start: tm(18, 0), End: tm(18, 30)},
-				{Start: tm(18, 1), End: tm(18, 15)},
+				Range(tm(18, 0), tm(18, 30)),
+				Range(tm(18, 1), tm(18, 15)),
 			},
 			want: []DateRange{
-				{Start: tm(12, 0), End: tm(12, 15)},
-				{Start: tm(12, 30), End: tm(12, 45)},
-				{Start: tm(13, 0), End: tm(13, 30)},
-				{Start: tm(14, 0), End: tm(14, 30)},
-				{Start: tm(15, 0), End: tm(15, 30)},
-				{Start: tm(16, 0), End: tm(16, 30)},
-				{Start: tm(17, 0), End: tm(17, 30)},
-				{Start: tm(18, 0), End: tm(18, 30)},
-				{Start: tm(19, 0), End: tm(19, 30)},
+				Range(tm(12, 0), tm(12, 15)),
+				Range(tm(12, 30), tm(12, 45)),
+				Range(tm(13, 0), tm(13, 30)),
+				Range(tm(14, 0), tm(14, 30)),
+				Range(tm(15, 0), tm(15, 30)),
+				Range(tm(16, 0), tm(16, 30)),
+				Range(tm(17, 0), tm(17, 30)),
+				Range(tm(18, 0), tm(18, 30)),
+				Range(tm(19, 0), tm(19, 30)),
 			},
 		},
 	}
@@ -451,65 +451,65 @@ func TestFlipDateRanges(t *testing.T) {
 		{
 			name: "flip within a day", fmt: "15:04",
 			args: args{
-				period: DateRange{Start: tm(0, 0), End: tm(23, 59)},
+				period: Range(tm(0, 0), tm(23, 59)),
 				ranges: []DateRange{
-					{Start: tm(13, 0), End: tm(14, 0)},
-					{Start: tm(14, 1), End: tm(15, 0)},
-					{Start: tm(16, 0), End: tm(20, 0)},
+					Range(tm(13, 0), tm(14, 0)),
+					Range(tm(14, 1), tm(15, 0)),
+					Range(tm(16, 0), tm(20, 0)),
 				},
 			},
 			want: []DateRange{
-				{Start: tm(0, 0), End: tm(13, 0)},
-				{Start: tm(14, 0), End: tm(14, 1)},
-				{Start: tm(15, 0), End: tm(16, 0)},
-				{Start: tm(20, 0), End: tm(23, 59)},
+				Range(tm(0, 0), tm(13, 0)),
+				Range(tm(14, 0), tm(14, 1)),
+				Range(tm(15, 0), tm(16, 0)),
+				Range(tm(20, 0), tm(23, 59)),
 			},
 		},
 		{
 			name: "no gap between the period and first, last range boundaries", fmt: "15:04",
 			args: args{
-				period: DateRange{Start: tm(0, 0), End: tm(23, 59)},
+				period: Range(tm(0, 0), tm(23, 59)),
 				ranges: []DateRange{
-					{Start: tm(0, 0), End: tm(14, 0)},
-					{Start: tm(14, 1), End: tm(15, 0)},
-					{Start: tm(16, 0), End: tm(20, 0)},
-					{Start: tm(20, 1), End: tm(23, 59)},
+					Range(tm(0, 0), tm(14, 0)),
+					Range(tm(14, 1), tm(15, 0)),
+					Range(tm(16, 0), tm(20, 0)),
+					Range(tm(20, 1), tm(23, 59)),
 				},
 			},
 			want: []DateRange{
-				{Start: tm(14, 0), End: tm(14, 1)},
-				{Start: tm(15, 0), End: tm(16, 0)},
-				{Start: tm(20, 0), End: tm(20, 1)},
+				Range(tm(14, 0), tm(14, 1)),
+				Range(tm(15, 0), tm(16, 0)),
+				Range(tm(20, 0), tm(20, 1)),
 			},
 		},
 		{
 			name: "flip within several days", fmt: "02 15:04",
 			args: args{
-				period: DateRange{Start: tmd(12, 13, 0), End: tmd(14, 16, 59)},
+				period: Range(tmd(12, 13, 0), tmd(14, 16, 59)),
 				ranges: []DateRange{
-					{Start: tmd(12, 13, 0), End: tmd(12, 14, 0)},
-					{Start: tmd(12, 14, 1), End: tmd(12, 15, 0)},
-					{Start: tmd(12, 16, 0), End: tmd(12, 20, 0)},
-					{Start: tmd(12, 23, 0), End: tmd(13, 6, 59)},
-					{Start: tmd(13, 8, 0), End: tmd(13, 23, 0)},
-					{Start: tmd(14, 1, 59), End: tmd(14, 14, 59)},
+					Range(tmd(12, 13, 0), tmd(12, 14, 0)),
+					Range(tmd(12, 14, 1), tmd(12, 15, 0)),
+					Range(tmd(12, 16, 0), tmd(12, 20, 0)),
+					Range(tmd(12, 23, 0), tmd(13, 6, 59)),
+					Range(tmd(13, 8, 0), tmd(13, 23, 0)),
+					Range(tmd(14, 1, 59), tmd(14, 14, 59)),
 				},
 			},
 			want: []DateRange{
-				{Start: tmd(12, 14, 0), End: tmd(12, 14, 1)},
-				{Start: tmd(12, 15, 0), End: tmd(12, 16, 0)},
-				{Start: tmd(12, 20, 0), End: tmd(12, 23, 0)},
-				{Start: tmd(13, 6, 59), End: tmd(13, 8, 0)},
-				{Start: tmd(13, 23, 0), End: tmd(14, 1, 59)},
-				{Start: tmd(14, 14, 59), End: tmd(14, 16, 59)},
+				Range(tmd(12, 14, 0), tmd(12, 14, 1)),
+				Range(tmd(12, 15, 0), tmd(12, 16, 0)),
+				Range(tmd(12, 20, 0), tmd(12, 23, 0)),
+				Range(tmd(13, 6, 59), tmd(13, 8, 0)),
+				Range(tmd(13, 23, 0), tmd(14, 1, 59)),
+				Range(tmd(14, 14, 59), tmd(14, 16, 59)),
 			},
 		},
 		{name: "empty range list", fmt: "02 15:04",
 			args: args{
-				period: DateRange{Start: tmd(12, 13, 0), End: tmd(14, 16, 59)},
+				period: Range(tmd(12, 13, 0), tmd(14, 16, 59)),
 				ranges: []DateRange{},
 			},
-			want: []DateRange{{Start: tmd(12, 13, 0), End: tmd(14, 16, 59)}},
+			want: []DateRange{Range(tmd(12, 13, 0), tmd(14, 16, 59))},
 		},
 	}
 	for _, tt := range tests {
@@ -519,64 +519,6 @@ func TestFlipDateRanges(t *testing.T) {
 			assert.Equal(t,
 				formattedRanges(tt.want, tt.fmt),
 				formattedRanges(ranges, tt.fmt),
-			)
-		})
-	}
-}
-
-func TestSplitToRangesPerDay(t *testing.T) {
-	const fmt = "2006-01-02 15:04:05.999999999"
-
-	dt := func(d int) Date { return Date{Year: 2021, Month: 6, Day: d} }
-
-	tests := []struct {
-		name   string
-		ranges []DateRange
-		want   map[Date][]DateRange
-	}{
-		{
-			name:   "two days, without boundaries of day",
-			ranges: []DateRange{{Start: tmd(12, 13, 0), End: tmd(13, 14, 0)}},
-			want: map[Date][]DateRange{
-				dt(12): {{Start: tmd(12, 13, 0), End: tmd(13, 0, 0)}},
-				dt(13): {{Start: tmd(13, 0, 0), End: tmd(13, 14, 0)}},
-			},
-		},
-		{
-			name:   "range with boundary on 00:00",
-			ranges: []DateRange{{Start: tmd(1, 10, 0), End: tmd(3, 0, 0)}},
-			want: map[Date][]DateRange{
-				dt(1): {{Start: tmd(1, 10, 0), End: tmd(1, 24, 0)}},
-				dt(2): {{Start: tmd(2, 0, 0), End: tmd(2, 24, 0)}},
-			},
-		},
-		{
-			name: "several ranges per day",
-			ranges: []DateRange{
-				{Start: tmd(1, 10, 0), End: tmd(1, 13, 0)},
-				{Start: tmd(1, 14, 0), End: tmd(2, 8, 0)},
-				{Start: tmd(2, 8, 0), End: tmd(3, 0, 0)},
-			},
-			want: map[Date][]DateRange{
-				dt(1): {
-					{Start: tmd(1, 10, 0), End: tmd(1, 13, 0)},
-					{Start: tmd(1, 14, 0), End: tmd(2, 0, 0)},
-				},
-				dt(2): {
-					{Start: tmd(2, 0, 0), End: tmd(2, 8, 0)},
-					{Start: tmd(2, 8, 0), End: tmd(3, 0, 0)},
-				},
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			ranges := SplitToRangesPerDay(tt.ranges)
-			assert.Equal(t,
-				formattedRangeMap(tt.want, fmt),
-				formattedRangeMap(ranges, fmt),
 			)
 		})
 	}
