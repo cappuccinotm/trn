@@ -7,8 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var dt = Date{Year: 2021, Month: 6, Day: 12}
-
 type formattedRange struct {
 	rng DateRange
 	fmt string
@@ -31,24 +29,14 @@ func formattedRanges(rngs []DateRange, fmt string) []formattedRange {
 	return res
 }
 
-func formattedRangeMap(m map[Date][]DateRange, fmt string) map[Date][]formattedRange {
-	res := map[Date][]formattedRange{}
-	for k, v := range m {
-		res[k] = formattedRanges(v, fmt)
-	}
-	return res
-}
+var dt = time.Date(2021, 6, 12, 0, 0, 0, 0, time.UTC)
 
 func tm(h, m int) time.Time {
-	return tmd(dt.Day, h, m)
+	return time.Date(dt.Year(), dt.Month(), dt.Day(), h, m, 0, 0, time.UTC)
 }
 
-func tmd(d, h, m int) time.Time {
-	return tmns(d, h, m, 0, 0)
-}
-
-func tmns(d, h, m, s, ns int) time.Time {
-	return time.Date(dt.Year, dt.Month, d, h, m, s, ns, time.UTC)
+func dhm(d, h, m int) time.Time {
+	return time.Date(dt.Year(), dt.Month(), d, h, m, 0, 0, time.UTC)
 }
 
 func TestDateRange_Truncate(t *testing.T) {
@@ -336,107 +324,6 @@ func TestDateRange_Split(t *testing.T) {
 	}
 }
 
-func TestMergeOverlappingRanges(t *testing.T) {
-	tests := []struct {
-		name string
-		args []DateRange
-		want []DateRange
-	}{
-		{
-			name: "ranges don't overlap",
-			args: []DateRange{
-				Range(tm(13, 0), tm(14, 0)),
-				Range(tm(15, 0), tm(16, 0)),
-			},
-			want: []DateRange{
-				Range(tm(13, 0), tm(14, 0)),
-				Range(tm(15, 0), tm(16, 0)),
-			},
-		},
-		{
-			name: "ranges intersect",
-			args: []DateRange{
-				Range(tm(13, 0), tm(14, 0)),
-				Range(tm(13, 30), tm(15, 0)),
-			},
-			want: []DateRange{
-				Range(tm(13, 0), tm(15, 0)),
-			},
-		},
-		{
-			name: "one range eternally overlaps the other",
-			args: []DateRange{
-				Range(tm(13, 0), tm(15, 0)),
-				Range(tm(13, 30), tm(14, 30)),
-			},
-			want: []DateRange{
-				Range(tm(13, 0), tm(15, 0)),
-			},
-		},
-		{
-			name: "boundaries of two ranges are equal",
-			args: []DateRange{
-				Range(tm(13, 0), tm(13, 15)),
-				Range(tm(13, 15), tm(13, 30)),
-			},
-			want: []DateRange{
-				Range(tm(13, 0), tm(13, 30)),
-			},
-		},
-		{
-			name: "complex test",
-			args: []DateRange{
-				// next three ranges must be merged (last two are within the first one)
-				Range(tm(19, 0), tm(19, 30)),
-				Range(tm(19, 1), tm(19, 15)),
-				Range(tm(19, 8), tm(19, 17)),
-				// next second range must be removed (end of first = end of second)
-				Range(tm(15, 0), tm(15, 30)),
-				Range(tm(15, 16), tm(15, 30)),
-				// next two ranges must NOT be merged
-				Range(tm(12, 0), tm(12, 15)),
-				Range(tm(12, 30), tm(12, 45)),
-				// next two ranges must be merged (end of the first = start of the second)
-				Range(tm(13, 0), tm(13, 15)),
-				Range(tm(13, 15), tm(13, 30)),
-				// next two ranges must be merged
-				Range(tm(14, 0), tm(14, 16)),
-				Range(tm(14, 15), tm(14, 30)),
-				// next second range must be removed (start of first = start of second)
-				Range(tm(16, 0), tm(16, 30)),
-				Range(tm(16, 0), tm(16, 16)),
-				// next second range must be removed (ranges are equal)
-				Range(tm(17, 0), tm(17, 30)),
-				Range(tm(17, 0), tm(17, 30)),
-				// next second range must be removed
-				Range(tm(18, 0), tm(18, 30)),
-				Range(tm(18, 1), tm(18, 15)),
-			},
-			want: []DateRange{
-				Range(tm(12, 0), tm(12, 15)),
-				Range(tm(12, 30), tm(12, 45)),
-				Range(tm(13, 0), tm(13, 30)),
-				Range(tm(14, 0), tm(14, 30)),
-				Range(tm(15, 0), tm(15, 30)),
-				Range(tm(16, 0), tm(16, 30)),
-				Range(tm(17, 0), tm(17, 30)),
-				Range(tm(18, 0), tm(18, 30)),
-				Range(tm(19, 0), tm(19, 30)),
-			},
-		},
-	}
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			ranges := MergeOverlappingRanges(tt.args)
-			assert.Equal(t,
-				formattedRanges(tt.want, "15:04"),
-				formattedRanges(ranges, "15:04"),
-			)
-		})
-	}
-}
-
 func TestFlipDateRanges(t *testing.T) {
 	type args struct {
 		period DateRange
@@ -485,31 +372,31 @@ func TestFlipDateRanges(t *testing.T) {
 		{
 			name: "flip within several days", fmt: "02 15:04",
 			args: args{
-				period: Range(tmd(12, 13, 0), tmd(14, 16, 59)),
+				period: Range(dhm(12, 13, 0), dhm(14, 16, 59)),
 				ranges: []DateRange{
-					Range(tmd(12, 13, 0), tmd(12, 14, 0)),
-					Range(tmd(12, 14, 1), tmd(12, 15, 0)),
-					Range(tmd(12, 16, 0), tmd(12, 20, 0)),
-					Range(tmd(12, 23, 0), tmd(13, 6, 59)),
-					Range(tmd(13, 8, 0), tmd(13, 23, 0)),
-					Range(tmd(14, 1, 59), tmd(14, 14, 59)),
+					Range(dhm(12, 13, 0), dhm(12, 14, 0)),
+					Range(dhm(12, 14, 1), dhm(12, 15, 0)),
+					Range(dhm(12, 16, 0), dhm(12, 20, 0)),
+					Range(dhm(12, 23, 0), dhm(13, 6, 59)),
+					Range(dhm(13, 8, 0), dhm(13, 23, 0)),
+					Range(dhm(14, 1, 59), dhm(14, 14, 59)),
 				},
 			},
 			want: []DateRange{
-				Range(tmd(12, 14, 0), tmd(12, 14, 1)),
-				Range(tmd(12, 15, 0), tmd(12, 16, 0)),
-				Range(tmd(12, 20, 0), tmd(12, 23, 0)),
-				Range(tmd(13, 6, 59), tmd(13, 8, 0)),
-				Range(tmd(13, 23, 0), tmd(14, 1, 59)),
-				Range(tmd(14, 14, 59), tmd(14, 16, 59)),
+				Range(dhm(12, 14, 0), dhm(12, 14, 1)),
+				Range(dhm(12, 15, 0), dhm(12, 16, 0)),
+				Range(dhm(12, 20, 0), dhm(12, 23, 0)),
+				Range(dhm(13, 6, 59), dhm(13, 8, 0)),
+				Range(dhm(13, 23, 0), dhm(14, 1, 59)),
+				Range(dhm(14, 14, 59), dhm(14, 16, 59)),
 			},
 		},
 		{name: "empty range list", fmt: "02 15:04",
 			args: args{
-				period: Range(tmd(12, 13, 0), tmd(14, 16, 59)),
+				period: Range(dhm(12, 13, 0), dhm(14, 16, 59)),
 				ranges: []DateRange{},
 			},
-			want: []DateRange{Range(tmd(12, 13, 0), tmd(14, 16, 59))},
+			want: []DateRange{Range(dhm(12, 13, 0), dhm(14, 16, 59))},
 		},
 	}
 	for _, tt := range tests {

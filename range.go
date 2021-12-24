@@ -3,7 +3,6 @@ package store
 
 import (
 	"fmt"
-	"sort"
 	"time"
 )
 
@@ -51,6 +50,12 @@ func (r DateRange) Start() time.Time { return r.st }
 // End returns the end time of the date range.
 func (r DateRange) End() time.Time { return r.st.Add(r.dur) }
 
+// In returns the date range with boundaries in the provided location's time zone.
+func (r DateRange) In(loc *time.Location) DateRange { return DateRange{st: r.st.In(loc), dur: r.dur} }
+
+// Empty returns true if the date range is empty.
+func (r DateRange) Empty() bool { return r.st.IsZero() && r.dur == 0 }
+
 // Format returns the string representation of the time range with the given format.
 func (r DateRange) Format(layout string) string {
 	return fmt.Sprintf("[%s, %s]", r.st.Format(layout), r.End().Format(layout))
@@ -94,9 +99,6 @@ func (r DateRange) Contains(other DateRange) bool {
 	return false
 }
 
-// Empty returns true if the date range is empty.
-func (r DateRange) Empty() bool { return r.st.IsZero() && r.dur == 0 }
-
 // Truncate returns the date range bounded to the *bounds*, i.e. it cuts
 // the start and the end of *r* to fit into the *bounds*.
 func (r DateRange) Truncate(bounds DateRange) DateRange {
@@ -128,25 +130,6 @@ func (r DateRange) Truncate(bounds DateRange) DateRange {
 	default:
 		panic("should never happen")
 	}
-}
-
-// In returns the date range with boundaries in the provided location's time zone.
-func (r DateRange) In(loc *time.Location) DateRange {
-	return DateRange{st: r.st.In(loc), dur: r.dur}
-}
-
-// DateRangesIn converts time zones of the provided date ranges into provided time zone.
-func DateRangesIn(rngs []DateRange, loc *time.Location) []DateRange {
-	res := make([]DateRange, len(rngs))
-	for i := range rngs {
-		res[i] = rngs[i].In(loc)
-	}
-	return res
-}
-
-// DateRangesToUTC converts time zones of the provided date ranges into UTC time zone.
-func DateRangesToUTC(rngs []DateRange) []DateRange {
-	return DateRangesIn(rngs, time.UTC)
 }
 
 // FlipDateRanges within the given period.
@@ -185,95 +168,4 @@ func (r DateRange) FlipDateRanges(ranges []DateRange) []DateRange {
 	}
 
 	return res
-}
-
-// MergeOverlappingRanges looks in the ranges slice, seeks for overlapping ranges and
-// merges such ranges into the one range.
-// Complexity: O(n * log(n))
-func MergeOverlappingRanges(ranges []DateRange) []DateRange {
-	var res []DateRange
-
-	boundaries := rangesToBoundaries(ranges)
-	// sorting boundaries by time
-	sort.Slice(boundaries, func(i, j int) bool { return boundaries[i].tm.Before(boundaries[j].tm) })
-
-	// add first boundary
-	var rangeStartTm time.Time
-	unfinishedBoundariesCnt := 0
-
-	// skip last boundary to allow looking ahead
-	for i := 0; i < len(boundaries)-1; i++ {
-		boundary := boundaries[i]
-
-		if boundary.typ == boundaryStart {
-			if unfinishedBoundariesCnt == 0 {
-				rangeStartTm = boundary.tm
-			}
-			unfinishedBoundariesCnt++
-			continue
-		}
-
-		nextBoundary := boundaries[i+1]
-		// if current and previous boundaries are equal - ignore them
-		if boundary.tm.Equal(nextBoundary.tm) && nextBoundary.typ == boundaryStart {
-			i++
-			continue
-		}
-
-		unfinishedBoundariesCnt--
-		// if this is an ending boundary and there is where the merged range ends...
-		if unfinishedBoundariesCnt == 0 {
-			res = append(res, DateRange{st: rangeStartTm, dur: boundary.tm.Sub(rangeStartTm)})
-		}
-	}
-
-	// process the last boundary, it must be the end boundary anyway
-	unfinishedBoundariesCnt--
-	if unfinishedBoundariesCnt == 0 {
-		res = append(res, DateRange{st: rangeStartTm, dur: boundaries[len(boundaries)-1].tm.Sub(rangeStartTm)})
-	}
-
-	return res
-}
-
-// Intersection returns the intersections between the date ranges.
-func Intersection(ranges []DateRange) DateRange {
-	if len(ranges) < 1 {
-		return DateRange{}
-	}
-
-	resRange := ranges[0]
-
-	for _, rng := range ranges[1:] {
-		resRange = resRange.Truncate(rng)
-	}
-
-	return resRange
-}
-
-// SortRanges sorts the given ranges by the start time.
-func SortRanges(ranges []DateRange) []DateRange {
-	sort.Slice(ranges, func(i, j int) bool { return ranges[i].st.Before(ranges[j].st) })
-	return ranges
-}
-
-func rangesToBoundaries(ranges []DateRange) []*timeRangeBoundary {
-	res := make([]*timeRangeBoundary, len(ranges)*2)
-	for i, rng := range ranges {
-		res[i*2] = &timeRangeBoundary{tm: rng.st, typ: boundaryStart}
-		res[i*2+1] = &timeRangeBoundary{tm: rng.End(), typ: boundaryEnd}
-	}
-	return res
-}
-
-type boundaryType int
-
-const (
-	boundaryStart boundaryType = 0
-	boundaryEnd   boundaryType = 1
-)
-
-type timeRangeBoundary struct {
-	tm  time.Time
-	typ boundaryType
 }
