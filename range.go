@@ -78,9 +78,10 @@ func (r DateRange) Stratify(duration time.Duration, interval time.Duration) []Da
 	}
 
 	var res []DateRange
+	rangeEnd := r.End()
 	rangeStart := r.st
 
-	for r.End().Sub(rangeStart.Add(duration)) >= 0 {
+	for rangeEnd.Sub(rangeStart.Add(duration)) >= 0 {
 		res = append(res, DateRange{st: rangeStart, dur: duration})
 		rangeStart = rangeStart.Add(interval)
 	}
@@ -132,23 +133,23 @@ func (r DateRange) Truncate(bounds DateRange) DateRange {
 
 // FlipDateRanges within the given period.
 //
-// Requirements for correct working:
-// - all ranges must be within the given time period
-// - ranges must be distinct (there must not be any overlapping ranges or ranges with equal start/end boundaries)
-// - ranges must be sorted by the start date
-//
 // The boundaries of the given ranges are considered to be inclusive, means
 // that the flipped ranges will start or end at the exact nanosecond where
 // the boundary from the input starts or ends.
-//
-// Complexity: O(n)
 func (r DateRange) FlipDateRanges(ranges []DateRange) []DateRange {
-	var res []DateRange
-
-	// if the list of ranges is empty - just return the whole period
 	if len(ranges) == 0 {
 		return []DateRange{r}
 	}
+
+	// to exclude the case of distinct ranges, ranges not within the period
+	// and unsorted list of ranges
+	rngs := MergeOverlappingRanges(ranges)
+
+	return r.flipValidRanges(rngs)
+}
+
+func (r DateRange) flipValidRanges(ranges []DateRange) []DateRange {
+	var res []DateRange
 
 	// add the gap between the start of the period and start of the first range
 	if !r.st.Equal(ranges[0].st) {

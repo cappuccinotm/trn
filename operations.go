@@ -22,7 +22,6 @@ func Intersection(ranges []DateRange) DateRange {
 
 // MergeOverlappingRanges looks in the ranges slice, seeks for overlapping ranges and
 // merges such ranges into the one range.
-// Complexity: O(n * log(n))
 func MergeOverlappingRanges(ranges []DateRange) []DateRange {
 	var res []DateRange
 
