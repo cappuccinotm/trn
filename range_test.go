@@ -1,4 +1,4 @@
-package store
+package timerange
 
 import (
 	"testing"
@@ -381,4 +381,65 @@ func TestFlipDateRanges(t *testing.T) {
 			)
 		})
 	}
+}
+
+func TestDateRange_Format(t *testing.T) {
+	assert.Equal(t,
+		"[2021-06-12T00:00:00, 2021-06-12T03:05:00]",
+		DateRange{st: dt, dur: 3*time.Hour + 5*time.Minute}.Format("2006-01-02T15:04:05"),
+	)
+}
+
+func TestDateRange_UTC(t *testing.T) {
+	// won't have effect on machine in UTC ¯\_(ツ)_/¯
+	assert.Equal(t, DateRange{st: dt.In(time.Local), dur: 0}, Range(dt, dt).In(time.Local))
+}
+
+func TestDateRange_String(t *testing.T) {
+	assert.Equal(t,
+		"[2021-06-12 00:00:00 +0000 UTC, 2021-06-12 03:05:00 +0000 UTC]",
+		DateRange{st: dt, dur: 3*time.Hour + 5*time.Minute}.String(),
+	)
+}
+
+func TestDateRange_Duration(t *testing.T) {
+	dur := 3*time.Hour + 5*time.Minute
+	assert.Equal(t, dur, DateRange{dur: dur}.Duration())
+}
+
+func TestDateRange_Start(t *testing.T) {
+	assert.Equal(t, dt, DateRange{st: dt}.Start())
+}
+
+func TestDateRange_Empty(t *testing.T) {
+	tests := []struct {
+		name string
+		arg  DateRange
+		want bool
+	}{
+		{name: "duration and start ts empty", arg: DateRange{}, want: true},
+		{name: "duration empty", arg: DateRange{st: dt}, want: false},
+		{name: "ts empty", arg: DateRange{dur: 3 * time.Hour}, want: false},
+		{name: "duration and start ts filled", arg: DateRange{st: dt, dur: 3 * time.Hour}, want: false},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, tt.arg.Empty())
+	}
+}
+
+func TestRange(t *testing.T) {
+	t.Run("start after end", func(t *testing.T) {
+		assert.Panics(t, func() { Range(dt.Add(3*time.Hour), dt) })
+	})
+
+	t.Run("without options", func(t *testing.T) {
+		assert.Equal(t, DateRange{st: dt, dur: 3 * time.Hour}, Range(dt, dt.Add(3*time.Hour)))
+	})
+
+	t.Run("with location", func(t *testing.T) {
+		dr := Range(dt.In(time.Local), dt.Add(3*time.Hour).In(time.Local), In(time.UTC))
+
+		// won't have effect on machine in UTC ¯\_(ツ)_/¯
+		assert.Equal(t, DateRange{st: dt, dur: 3 * time.Hour}, dr)
+	})
 }

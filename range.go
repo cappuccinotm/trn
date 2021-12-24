@@ -1,5 +1,6 @@
-// Package store provides service data structures and methods to operate them.
-package store
+// Package timerange provides structures and methods to perform complex
+// operations over time ranges.
+package timerange
 
 import (
 	"fmt"
@@ -17,6 +18,7 @@ func In(loc *time.Location) Option {
 }
 
 // Range returns the new DateRange in the given time bounds.
+// DateRange will get the location of the start timestamp.
 func Range(start, end time.Time, opts ...Option) DateRange {
 	if start.After(end) {
 		panic("start is after the end")
