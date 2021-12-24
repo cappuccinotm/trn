@@ -208,12 +208,8 @@ func TestDateRange_Stratify(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  Range(tm(1, 34), tm(2, 44)),
-			args: args{
-				offset:   6 * time.Minute,
-				duration: 30 * time.Minute,
-				interval: 5 * time.Minute,
-			},
+			rng:  Range(tm(1, 40), tm(2, 44)),
+			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []DateRange{
 				Range(tm(1, 40), tm(2, 10)),
 				Range(tm(1, 45), tm(2, 15)),
@@ -226,12 +222,8 @@ func TestDateRange_Stratify(t *testing.T) {
 		},
 		{
 			name: "without space left at end",
-			rng:  Range(tm(1, 34), tm(2, 40)),
-			args: args{
-				offset:   6 * time.Minute,
-				duration: 30 * time.Minute,
-				interval: 5 * time.Minute,
-			},
+			rng:  Range(tm(1, 40), tm(2, 40)),
+			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []DateRange{
 				Range(tm(1, 40), tm(2, 10)),
 				Range(tm(1, 45), tm(2, 15)),
@@ -242,22 +234,10 @@ func TestDateRange_Stratify(t *testing.T) {
 				Range(tm(2, 10), tm(2, 40)),
 			},
 		},
-		{
-			name: "zero offset",
-			rng:  Range(tm(1, 30), tm(2, 0)),
-			args: args{duration: 10 * time.Minute, interval: 5 * time.Minute},
-			want: []DateRange{
-				Range(tm(1, 30), tm(1, 40)),
-				Range(tm(1, 35), tm(1, 45)),
-				Range(tm(1, 40), tm(1, 50)),
-				Range(tm(1, 45), tm(1, 55)),
-				Range(tm(1, 50), tm(2, 0)),
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.rng.Stratify(tt.args.offset, tt.args.duration, tt.args.interval)
+			got := tt.rng.Stratify(tt.args.duration, tt.args.interval)
 			assert.Equal(t, formattedRanges(tt.want, "15:04"), formattedRanges(got, "15:04"))
 		})
 	}
@@ -277,12 +257,8 @@ func TestDateRange_Split(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  Range(tm(1, 34), tm(3, 0)),
-			args: args{
-				offset:   6 * time.Minute,
-				duration: 30 * time.Minute,
-				interval: 5 * time.Minute,
-			},
+			rng:  Range(tm(1, 40), tm(3, 0)),
+			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []DateRange{
 				Range(tm(1, 40), tm(2, 10)),
 				Range(tm(2, 15), tm(2, 45)),
@@ -290,12 +266,8 @@ func TestDateRange_Split(t *testing.T) {
 		},
 		{
 			name: "without space left at end",
-			rng:  Range(tm(1, 34), tm(3, 20)),
-			args: args{
-				offset:   6 * time.Minute,
-				duration: 30 * time.Minute,
-				interval: 5 * time.Minute,
-			},
+			rng:  Range(tm(1, 40), tm(3, 20)),
+			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []DateRange{
 				Range(tm(1, 40), tm(2, 10)),
 				Range(tm(2, 15), tm(2, 45)),
@@ -303,7 +275,7 @@ func TestDateRange_Split(t *testing.T) {
 			},
 		},
 		{
-			name: "zero offset and interval",
+			name: "zero interval",
 			rng:  Range(tm(1, 30), tm(2, 0)),
 			args: args{duration: 5 * time.Minute},
 			want: []DateRange{
@@ -318,7 +290,7 @@ func TestDateRange_Split(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.rng.Split(tt.args.offset, tt.args.duration, tt.args.interval)
+			got := tt.rng.Split(tt.args.duration, tt.args.interval)
 			assert.Equal(t, formattedRanges(tt.want, "15:04"), formattedRanges(got, "15:04"))
 		})
 	}

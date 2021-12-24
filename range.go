@@ -61,26 +61,24 @@ func (r DateRange) Format(layout string) string {
 	return fmt.Sprintf("[%s, %s]", r.st.Format(layout), r.End().Format(layout))
 }
 
-// Split the date range into smaller ranges, starting from the given offset,
-// with fixed duration and with the given interval between the *end* of the
-// one range and *start* of next range.
-func (r DateRange) Split(offset time.Duration, duration time.Duration, interval time.Duration) []DateRange {
+// Split the date range into smaller ranges, with fixed duration and with the
+// given interval between the *end* of the one range and *start* of next range.
+func (r DateRange) Split(duration time.Duration, interval time.Duration) []DateRange {
 	if duration == 0 {
 		panic("cannot split with zero duration")
 	}
-	return r.Stratify(offset, duration, duration+interval)
+	return r.Stratify(duration, duration+interval)
 }
 
-// Stratify the date range into smaller ranges, starting from the given offset,
-// with fixed duration and with the given interval between the *starts* of the
-// resulting ranges.
-func (r DateRange) Stratify(offset time.Duration, duration time.Duration, interval time.Duration) []DateRange {
+// Stratify the date range into smaller ranges, with fixed duration and with the
+// given interval between the *starts* of the resulting ranges.
+func (r DateRange) Stratify(duration time.Duration, interval time.Duration) []DateRange {
 	if interval == 0 || duration == 0 {
 		panic("cannot stratify with zero duration or zero interval")
 	}
 
 	var res []DateRange
-	rangeStart := r.st.Add(offset)
+	rangeStart := r.st
 
 	for r.End().Sub(rangeStart.Add(duration)) >= 0 {
 		res = append(res, DateRange{st: rangeStart, dur: duration})
