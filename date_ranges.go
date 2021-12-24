@@ -126,7 +126,7 @@ func (r DateRange) Truncate(bounds DateRange) DateRange {
 		// --YYY----
 		return DateRange{st: r.st, dur: bounds.End().Sub(r.st)}
 	default:
-		return DateRange{}
+		panic("should never happen")
 	}
 }
 
