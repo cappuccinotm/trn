@@ -93,6 +93,7 @@ func (r Range) Format(layout string) string {
 // given interval between the *end* of the one range and *start* of next range.
 // In case if the last interval doesn't fit into the given duration, MustSplit won't
 // return it.
+// Returns ErrZeroDurationInterval if the provided duration is less or equal zero.
 func (r Range) Split(duration time.Duration, interval time.Duration) ([]Range, error) {
 	if duration <= 0 {
 		return nil, ErrZeroDurationInterval
@@ -104,6 +105,8 @@ func (r Range) Split(duration time.Duration, interval time.Duration) ([]Range, e
 // given interval between the *starts* of the resulting ranges.
 // In case if the last interval doesn't fit into the given duration, MustStratify
 // won't return it.
+// Returns ErrZeroDurationInterval if the provided duration or interval is less
+// or equal to zero.
 func (r Range) Stratify(duration time.Duration, interval time.Duration) ([]Range, error) {
 	if interval <= 0 || duration <= 0 {
 		return nil, ErrZeroDurationInterval

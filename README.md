@@ -22,19 +22,19 @@ For more examples see [test file](examples_test.go).
   
   Creates a new `Range` with start at the given time and with the given duration.
 
-- `func Between(start, end time.Time, opts ...Option) Range`
+- `func Between(start, end time.Time, opts ...Option) (Range, error)`
 
   Creates a new `Range` within the given time range. `Between` uses the location
   of the `start` time for the range.
-  
-  **Note:** `Between` panics if the `start` time is later than the `end` time.
+  Returns ErrStartAfterEnd if the start time is later than the end.
 
-- `func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range`
+- `func (r Range) Stratify(duration time.Duration, interval time.Duration) ([]Range, error)`
   
   Slices the range into smaller ones with fixed `duration` and fixed `interval` 
   between their **starts**.
   In case if the last interval doesn't fit into the given duration, `Stratify` 
   won't return it.
+  Returns ErrZeroDurationInterval if the provided duration or interval is less or equal to zero.
 
 <details><summary>Illustration</summary>
 
@@ -42,12 +42,13 @@ For more examples see [test file](examples_test.go).
 
 </details>
 
-- `func (r Range) Split(duration time.Duration, interval time.Duration) []Range`
+- `func (r Range) Split(duration time.Duration, interval time.Duration) ([]Range, error)`
 
   Slices the range into smaller ones with fixed `duration` and fixed `interval` 
   between the **end** of the one range and **start** of next range.
   In case if the last interval doesn't fit into the given duration, `Split` 
   won't return it.
+  Returns ErrZeroDurationInterval if the provided duration is less or equal to zero.
 
 <details><summary>Illustration</summary>
 
