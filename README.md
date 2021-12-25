@@ -8,11 +8,22 @@ operations over time ranges.
 ## Usage
 ```go
 rng := trn.New(time.Now(), 3 * time.Hour, trn.In(time.UTC))
+
+betweenRng := trn.Between(time.Now(), time.Now().Add(3 * time.Hour), trn.In(time.UTC))
 ```
 
 For more examples see [test file](examples_test.go).
 
 ## Methods
+- `func New(start time.Time, duration time.Duration, opts ...Option) Range`
+  
+  Creates a new `Range` with start at the given time and with the given duration.
+
+- `func Between(start, end time.Time, opts ...Option) Range`
+
+  Creates a new `Range` within the given time range. `Between` uses the location
+  of the `start` time for the range.
+
 - `func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range`
   
   Slices the range into smaller ones with fixed `duration` and fixed `interval` 
