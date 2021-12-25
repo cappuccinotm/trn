@@ -84,7 +84,7 @@ For more examples see [test file](examples_test.go).
 
 </details>
 
-There are some other non-algorithmic methods, which you can see in the [source code](range.go).
+There are some other non-algorithmic methods, which you can see in the [reference](https://pkg.go.dev/github.com/cappuccinotm/trn).
 
 ## Details
 
