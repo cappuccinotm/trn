@@ -1,4 +1,4 @@
-package timerange
+package trn
 
 import (
 	"github.com/stretchr/testify/assert"

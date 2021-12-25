@@ -1,4 +1,4 @@
-module github.com/cappuccinotm/timerange
+module github.com/cappuccinotm/trn
 
 go 1.17
 

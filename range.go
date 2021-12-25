@@ -1,6 +1,6 @@
-// Package timerange provides structures and methods to perform complex
+// Package trn provides structures and methods to perform complex
 // operations over time ranges.
-package timerange
+package trn
 
 import (
 	"fmt"

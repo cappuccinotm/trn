@@ -1,4 +1,4 @@
-package timerange
+package trn
 
 import (
 	"sort"
@@ -68,11 +68,11 @@ func MergeOverlappingRanges(ranges []Range) []Range {
 	return res
 }
 
-func rangesToBoundaries(ranges []Range) []*timeRangeBoundary {
-	res := make([]*timeRangeBoundary, len(ranges)*2)
+func rangesToBoundaries(ranges []Range) []*boundary {
+	res := make([]*boundary, len(ranges)*2)
 	for i, rng := range ranges {
-		res[i*2] = &timeRangeBoundary{tm: rng.st, typ: boundaryStart}
-		res[i*2+1] = &timeRangeBoundary{tm: rng.End(), typ: boundaryEnd}
+		res[i*2] = &boundary{tm: rng.st, typ: boundaryStart}
+		res[i*2+1] = &boundary{tm: rng.End(), typ: boundaryEnd}
 	}
 	return res
 }
@@ -84,7 +84,7 @@ const (
 	boundaryEnd   boundaryType = 1
 )
 
-type timeRangeBoundary struct {
+type boundary struct {
 	tm  time.Time
 	typ boundaryType
 }
