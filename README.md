@@ -14,6 +14,9 @@ betweenRng := trn.Between(time.Now(), time.Now().Add(3 * time.Hour), trn.In(time
 
 For more examples see [test file](examples_test.go).
 
+## Todo
+- [ ] Make UTC and opts tests work in UTC location
+
 ## Methods
 - `func New(start time.Time, duration time.Duration, opts ...Option) Range`
   

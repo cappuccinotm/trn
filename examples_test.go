@@ -10,7 +10,9 @@ func TestMergeRanges(t *testing.T) {
 	now := time.Now()
 
 	rng := New(now, time.Hour+3*time.Minute)
-	ranges := rng.Stratify(15*time.Minute, 5*time.Minute)
+	ranges, err := rng.Stratify(15*time.Minute, 5*time.Minute)
+	assert.NoError(t, err)
+
 	assert.Equal(t, []Range{
 		New(now, 15*time.Minute),
 		New(now.Add(5*time.Minute), 15*time.Minute),

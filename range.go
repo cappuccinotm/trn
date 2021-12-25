@@ -30,18 +30,19 @@ func New(start time.Time, duration time.Duration, opts ...Option) Range {
 }
 
 // Between returns the new Range in the given time bounds. Range will use the
-// location of the start timestamp. Panics if the start time is later than the
-// end time of the range.
-func Between(start, end time.Time, opts ...Option) Range {
+// location of the start timestamp.
+// Returns ErrStartAfterEnd if the start time is later than the end.
+func Between(start, end time.Time, opts ...Option) (Range, error) {
 	if start.After(end) {
-		panic("start is after the end")
+		return Range{}, ErrStartAfterEnd
 	}
 
 	res := Range{st: start, dur: end.Sub(start)}
 	for _, opt := range opts {
 		opt(&res)
 	}
-	return res
+
+	return res, nil
 }
 
 // Range represents time slot with its own start and end time boundaries
@@ -90,22 +91,22 @@ func (r Range) Format(layout string) string {
 
 // Split the date range into smaller ranges, with fixed duration and with the
 // given interval between the *end* of the one range and *start* of next range.
-// In case if the last interval doesn't fit into the given duration, Split won't
+// In case if the last interval doesn't fit into the given duration, MustSplit won't
 // return it.
-func (r Range) Split(duration time.Duration, interval time.Duration) []Range {
-	if duration == 0 {
-		panic("cannot split with zero duration")
+func (r Range) Split(duration time.Duration, interval time.Duration) ([]Range, error) {
+	if duration <= 0 {
+		return nil, ErrZeroDurationInterval
 	}
 	return r.Stratify(duration, duration+interval)
 }
 
 // Stratify the date range into smaller ranges, with fixed duration and with the
 // given interval between the *starts* of the resulting ranges.
-// In case if the last interval doesn't fit into the given duration, Stratify
+// In case if the last interval doesn't fit into the given duration, MustStratify
 // won't return it.
-func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range {
-	if interval == 0 || duration == 0 {
-		panic("cannot stratify with zero duration or zero interval")
+func (r Range) Stratify(duration time.Duration, interval time.Duration) ([]Range, error) {
+	if interval <= 0 || duration <= 0 {
+		return nil, ErrZeroDurationInterval
 	}
 
 	var res []Range
@@ -117,7 +118,7 @@ func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range 
 		rangeStart = rangeStart.Add(interval)
 	}
 
-	return res
+	return res, nil
 }
 
 // Contains returns true if the other date range is within this date range.
@@ -158,7 +159,7 @@ func (r Range) Truncate(bounds Range) Range {
 		// --YYY----
 		return Range{st: r.st, dur: bounds.End().Sub(r.st)}
 	default:
-		panic("should never happen")
+		panic("trn: should never happen")
 	}
 }
 
@@ -199,3 +200,42 @@ func (r Range) flipValidRanges(ranges []Range) []Range {
 
 	return res
 }
+
+// MustSplit does the same as Split, but panics in case of any error.
+func (r Range) MustSplit(duration time.Duration, interval time.Duration) []Range {
+	rngs, err := r.Split(duration, interval)
+	if err != nil {
+		panic(err)
+	}
+	return rngs
+}
+
+// MustStratify does the same as Stratify, but panics in case of any error.
+func (r Range) MustStratify(duration time.Duration, interval time.Duration) []Range {
+	rngs, err := r.Stratify(duration, interval)
+	if err != nil {
+		panic(err)
+	}
+	return rngs
+}
+
+// MustBetween does the same as Between, but panics, instead of returning error.
+func MustBetween(start, end time.Time, opts ...Option) Range {
+	rng, err := Between(start, end, opts...)
+	if err != nil {
+		panic(err)
+	}
+	return rng
+}
+
+// Error describes any error appeared in this package.
+type Error string
+
+// Error returns string representation of the error.
+func (e Error) Error() string { return string(e) }
+
+// package errors
+const (
+	ErrStartAfterEnd        = Error("trn: start time is later than the end")
+	ErrZeroDurationInterval = Error("trn: cannot split with zero duration or interval")
+)
