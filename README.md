@@ -23,6 +23,8 @@ For more examples see [test file](examples_test.go).
 
   Creates a new `Range` within the given time range. `Between` uses the location
   of the `start` time for the range.
+  
+  **Note:** `Between` panics if the `start` time is later than the `end` time.
 
 - `func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range`
   

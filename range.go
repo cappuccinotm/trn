@@ -29,8 +29,9 @@ func New(start time.Time, duration time.Duration, opts ...Option) Range {
 	return res
 }
 
-// Between returns the new Range in the given time bounds.
-// Range will use the location of the start timestamp.
+// Between returns the new Range in the given time bounds. Range will use the
+// location of the start timestamp. Panics if the start time is later than the
+// end time of the range.
 func Between(start, end time.Time, opts ...Option) Range {
 	if start.After(end) {
 		panic("start is after the end")
