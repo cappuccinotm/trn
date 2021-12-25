@@ -1,6 +1,6 @@
 # Time Ranges [![Go Reference](https://pkg.go.dev/badge/github.com/cappuccinotm/trn.svg)](https://pkg.go.dev/github.com/cappuccinotm/trn) [![Go](https://github.com/cappuccinotm/trn/actions/workflows/go.yaml/badge.svg)](https://github.com/cappuccinotm/trn/actions/workflows/go.yaml) [![codecov](https://codecov.io/gh/cappuccinotm/trn/branch/master/graph/badge.svg?token=I8SsMkdRqd)](https://codecov.io/gh/cappuccinotm/trn) 
-The library adds the `Range` type with methods to perform complex operations
-over time ranges.
+Package `trn` introduces a `Range` type with useful methods to perform complex
+operations over time ranges.
 
 ## Install and update
 `go get -u github.com/cappuccinotm/trn`
