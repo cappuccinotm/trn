@@ -5,6 +5,8 @@ package trn
 import (
 	"fmt"
 	"time"
+	"strings"
+	"strconv"
 )
 
 const defaultRangeFmt = "2006-01-02 15:04:05.999999999 -0700 MST"
@@ -50,6 +52,18 @@ type Range struct {
 // String implements fmt.Stringer to print and log Range properly
 func (r Range) String() string { return r.UTC().Format(defaultRangeFmt) }
 
+// GoString implements fmt.GoStringer and formats r to be printed in Go source
+// code.
+func (r Range) GoString() string {
+	sb := &strings.Builder{}
+	sb.WriteString("trn.New(")
+	sb.WriteString(r.st.GoString())
+	sb.WriteString(", ")
+	sb.WriteString(strconv.FormatInt(int64(r.dur), 10))
+	sb.WriteRune(')')
+	return sb.String()
+}
+
 // UTC returns the date range with boundaries in UTC.
 func (r Range) UTC() Range { return r.In(time.UTC) }
 
@@ -75,6 +89,8 @@ func (r Range) Format(layout string) string {
 
 // Split the date range into smaller ranges, with fixed duration and with the
 // given interval between the *end* of the one range and *start* of next range.
+// In case if the last interval doesn't fit into the given duration, Split won't
+// return it.
 func (r Range) Split(duration time.Duration, interval time.Duration) []Range {
 	if duration == 0 {
 		panic("cannot split with zero duration")
@@ -84,6 +100,8 @@ func (r Range) Split(duration time.Duration, interval time.Duration) []Range {
 
 // Stratify the date range into smaller ranges, with fixed duration and with the
 // given interval between the *starts* of the resulting ranges.
+// In case if the last interval doesn't fit into the given duration, Stratify
+// won't return it.
 func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range {
 	if interval == 0 || duration == 0 {
 		panic("cannot stratify with zero duration or zero interval")

@@ -1,2 +1,95 @@
-# timerange
-working with time ranges simpler
+# Time Ranges
+The library adds the `Range` type with methods to perform complex operations
+over time ranges.
+
+## Install and update
+`go get -u github.com/cappuccinotm/trn`
+
+## Usage
+```go
+rng := trn.New(time.Now(), 3 * time.Hour, trn.In(time.UTC))
+```
+
+For more examples see [test file](examples_test.go).
+
+## Methods
+- `func (r Range) Stratify(duration time.Duration, interval time.Duration) []Range`
+  
+  Slices the range into smaller ones with fixed `duration` and fixed `interval` 
+  between their **starts**.
+  In case if the last interval doesn't fit into the given duration, `Stratify` 
+  won't return it.
+
+<details><summary>Illustration</summary>
+
+![stratify illustration](_img/stratify.svg)
+
+</details>
+
+- `func (r Range) Split(duration time.Duration, interval time.Duration) []Range`
+
+  Slices the range into smaller ones with fixed `duration` and fixed `interval` 
+  the **end** of the one range and **start** of next range.
+  In case if the last interval doesn't fit into the given duration, `Split` 
+  won't return it.
+
+<details><summary>Illustration</summary>
+
+![split illustration](_img/split.svg)
+
+</details>
+
+- `func (r Range) Truncate(bounds Range) Range`
+  
+  Cuts the start and the end of the range to fit the given `bounds`.
+
+<details><summary>Illustration</summary>
+
+![truncate illustration](_img/truncate.svg)
+
+</details>
+
+- `MergeOverlappingRanges(ranges []Range) []Range`
+  
+<details><summary>Illustration</summary>
+
+![merge illustration](_img/merge_overlapping_ranges.svg)
+
+</details>
+
+- `func (r Range) Flip(ranges []Range) []Range`
+
+  Flips the given `ranges` within the given period (`r`).
+  
+  The boundaries of the given ranges are considered to be inclusive, which means
+  that the flipped ranges will start or end at the exact nanosecond where
+  the boundary from the input starts or ends.
+
+  Note: for the sake of safety, ranges are being merged before flip to ensure 
+  the correct working of method.
+
+<details><summary>Illustration</summary>
+
+![flip illustration](_img/flip.svg)
+
+</details>
+
+- `func Intersection(ranges []Range) Range`
+
+  Returns the range, which is common for all the given ranges.
+
+<details><summary>Illustration</summary>
+
+![intersection illustration](_img/intersection.svg)
+
+</details>
+
+There are some other non-algorithmic methods, which you can see in the [source code](range.go).
+
+## Details
+
+`String` method formats the range in format `[start time, end time]`, where the 
+times are formatted with the next template:
+```go
+const defaultRangeFmt = "2006-01-02 15:04:05.999999999 -0700 MST"
+```

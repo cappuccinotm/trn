@@ -456,3 +456,13 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, dr)
 	})
 }
+
+func TestRange_GoString(t *testing.T) {
+	assert.Equal(t,
+		"trn.New(time.Date(2021, time.December, 25, 18, 34, 30, 0, time.UTC), 900000000000)",
+		Range{
+			st:  time.Date(2021, time.December, 25, 18, 34, 30, 0, time.UTC),
+			dur: 900000000000, // 15 * time.Minute
+		}.GoString(),
+	)
+}
