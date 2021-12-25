@@ -39,7 +39,7 @@ func dhm(d, h, m int) time.Time {
 	return time.Date(dt.Year(), dt.Month(), d, h, m, 0, 0, time.UTC)
 }
 
-func TestDateRange_Truncate(t *testing.T) {
+func TestRange_Truncate(t *testing.T) {
 	tests := []struct {
 		name   string
 		rng    Range
@@ -48,63 +48,63 @@ func TestDateRange_Truncate(t *testing.T) {
 	}{
 		{
 			name:   "doesn't intersect (earlier)",
-			rng:    New(tm(13, 0), tm(14, 0)), // -XXX-----
-			bounds: New(tm(15, 0), tm(16, 0)), // -----YYY-
+			rng:    Between(tm(13, 0), tm(14, 0)), // -XXX-----
+			bounds: Between(tm(15, 0), tm(16, 0)), // -----YYY-
 			want:   Range{},
 		},
 		{
 			name:   "doesn't intersect (later)",
-			rng:    New(tm(15, 0), tm(16, 0)), // -----XXX-
-			bounds: New(tm(13, 0), tm(14, 0)), // -YYY-----
+			rng:    Between(tm(15, 0), tm(16, 0)), // -----XXX-
+			bounds: Between(tm(13, 0), tm(14, 0)), // -YYY-----
 			want:   Range{},
 		},
 		{
 			name:   "overlaps the bounds",
-			rng:    New(tm(13, 0), tm(16, 0)), // -XXXXXXX-
-			bounds: New(tm(14, 0), tm(15, 0)), // ---YYY---
-			want:   New(tm(14, 0), tm(15, 0)),
+			rng:    Between(tm(13, 0), tm(16, 0)), // -XXXXXXX-
+			bounds: Between(tm(14, 0), tm(15, 0)), // ---YYY---
+			want:   Between(tm(14, 0), tm(15, 0)),
 		},
 		{
 			name:   "bounds overlap",
-			rng:    New(tm(14, 0), tm(15, 0)), // ---XXX---
-			bounds: New(tm(13, 0), tm(16, 0)), // -YYYYYYY-
-			want:   New(tm(14, 0), tm(15, 0)),
+			rng:    Between(tm(14, 0), tm(15, 0)), // ---XXX---
+			bounds: Between(tm(13, 0), tm(16, 0)), // -YYYYYYY-
+			want:   Between(tm(14, 0), tm(15, 0)),
 		},
 		{
 			name:   "intersect, bound end later",
-			rng:    New(tm(13, 0), tm(15, 0)), // ---XXX---
-			bounds: New(tm(14, 0), tm(16, 0)), // ----YYY--
-			want:   New(tm(14, 0), tm(15, 0)),
+			rng:    Between(tm(13, 0), tm(15, 0)), // ---XXX---
+			bounds: Between(tm(14, 0), tm(16, 0)), // ----YYY--
+			want:   Between(tm(14, 0), tm(15, 0)),
 		},
 		{
 			name:   "overlaps, starts are equal",
-			rng:    New(tm(13, 0), tm(16, 0)), // --XXXX---
-			bounds: New(tm(13, 0), tm(15, 0)), // --YYY----
-			want:   New(tm(13, 0), tm(15, 0)),
+			rng:    Between(tm(13, 0), tm(16, 0)), // --XXXX---
+			bounds: Between(tm(13, 0), tm(15, 0)), // --YYY----
+			want:   Between(tm(13, 0), tm(15, 0)),
 		},
 		{
 			name:   "bounds overlap, starts are equal",
-			rng:    New(tm(13, 0), tm(15, 0)), // --XXX----
-			bounds: New(tm(13, 0), tm(16, 0)), // --YYYY---
-			want:   New(tm(13, 0), tm(15, 0)),
+			rng:    Between(tm(13, 0), tm(15, 0)), // --XXX----
+			bounds: Between(tm(13, 0), tm(16, 0)), // --YYYY---
+			want:   Between(tm(13, 0), tm(15, 0)),
 		},
 		{
 			name:   "overlaps, ends are equal",
-			rng:    New(tm(13, 0), tm(16, 0)), // --XXXX---
-			bounds: New(tm(14, 0), tm(16, 0)), // ---YYY---
-			want:   New(tm(14, 0), tm(16, 0)),
+			rng:    Between(tm(13, 0), tm(16, 0)), // --XXXX---
+			bounds: Between(tm(14, 0), tm(16, 0)), // ---YYY---
+			want:   Between(tm(14, 0), tm(16, 0)),
 		},
 		{
 			name:   "bounds overlap, ends are equal",
-			rng:    New(tm(14, 0), tm(16, 0)), // ---XXX---
-			bounds: New(tm(13, 0), tm(16, 0)), // --YYYY---
-			want:   New(tm(14, 0), tm(16, 0)),
+			rng:    Between(tm(14, 0), tm(16, 0)), // ---XXX---
+			bounds: Between(tm(13, 0), tm(16, 0)), // --YYYY---
+			want:   Between(tm(14, 0), tm(16, 0)),
 		},
 		{
 			name:   "intersect, bound end earlier",
-			rng:    New(tm(14, 0), tm(16, 0)), // ---XXX---
-			bounds: New(tm(13, 0), tm(15, 0)), // --YYY----
-			want:   New(tm(14, 0), tm(15, 0)),
+			rng:    Between(tm(14, 0), tm(16, 0)), // ---XXX---
+			bounds: Between(tm(13, 0), tm(15, 0)), // --YYY----
+			want:   Between(tm(14, 0), tm(15, 0)),
 		},
 	}
 	for _, tt := range tests {
@@ -119,7 +119,7 @@ func TestDateRange_Truncate(t *testing.T) {
 	}
 }
 
-func TestDateRange_Contains(t *testing.T) {
+func TestRange_Contains(t *testing.T) {
 	tests := []struct {
 		name  string
 		rng   Range
@@ -128,62 +128,62 @@ func TestDateRange_Contains(t *testing.T) {
 	}{
 		{
 			name:  "doesn't intersect (earlier)",
-			rng:   New(tm(13, 0), tm(14, 0)), // -XXX-----
-			other: New(tm(15, 0), tm(16, 0)), // -----YYY-
+			rng:   Between(tm(13, 0), tm(14, 0)), // -XXX-----
+			other: Between(tm(15, 0), tm(16, 0)), // -----YYY-
 			want:  false,
 		},
 		{
 			name:  "doesn't intersect (later)",
-			rng:   New(tm(15, 0), tm(16, 0)), // -----XXX-
-			other: New(tm(13, 0), tm(14, 0)), // -YYY-----
+			rng:   Between(tm(15, 0), tm(16, 0)), // -----XXX-
+			other: Between(tm(13, 0), tm(14, 0)), // -YYY-----
 			want:  false,
 		},
 		{
 			name:  "overlaps the bounds",
-			rng:   New(tm(13, 0), tm(16, 0)), // -XXXXXXX-
-			other: New(tm(14, 0), tm(15, 0)), // ---YYY---
+			rng:   Between(tm(13, 0), tm(16, 0)), // -XXXXXXX-
+			other: Between(tm(14, 0), tm(15, 0)), // ---YYY---
 			want:  true,
 		},
 		{
 			name:  "bounds overlap",
-			rng:   New(tm(14, 0), tm(15, 0)), // ---XXX---
-			other: New(tm(13, 0), tm(16, 0)), // -YYYYYYY-
+			rng:   Between(tm(14, 0), tm(15, 0)), // ---XXX---
+			other: Between(tm(13, 0), tm(16, 0)), // -YYYYYYY-
 			want:  false,
 		},
 		{
 			name:  "intersect, bound end later",
-			rng:   New(tm(13, 0), tm(15, 0)), // ---XXX---
-			other: New(tm(14, 0), tm(16, 0)), // ----YYY--
+			rng:   Between(tm(13, 0), tm(15, 0)), // ---XXX---
+			other: Between(tm(14, 0), tm(16, 0)), // ----YYY--
 			want:  false,
 		},
 		{
 			name:  "overlaps, starts are equal",
-			rng:   New(tm(13, 0), tm(16, 0)), // --XXXX---
-			other: New(tm(13, 0), tm(15, 0)), // --YYY----
+			rng:   Between(tm(13, 0), tm(16, 0)), // --XXXX---
+			other: Between(tm(13, 0), tm(15, 0)), // --YYY----
 			want:  true,
 		},
 		{
 			name:  "bounds overlap, starts are equal",
-			rng:   New(tm(13, 0), tm(15, 0)), // --XXX----
-			other: New(tm(13, 0), tm(16, 0)), // --YYYY---
+			rng:   Between(tm(13, 0), tm(15, 0)), // --XXX----
+			other: Between(tm(13, 0), tm(16, 0)), // --YYYY---
 			want:  false,
 		},
 		{
 			name:  "overlaps, ends are equal",
-			rng:   New(tm(13, 0), tm(16, 0)), // --XXXX---
-			other: New(tm(14, 0), tm(16, 0)), // ---YYY---
+			rng:   Between(tm(13, 0), tm(16, 0)), // --XXXX---
+			other: Between(tm(14, 0), tm(16, 0)), // ---YYY---
 			want:  true,
 		},
 		{
 			name:  "bounds overlap, ends are equal",
-			rng:   New(tm(14, 0), tm(16, 0)), // ---XXX---
-			other: New(tm(13, 0), tm(16, 0)), // --YYYY---
+			rng:   Between(tm(14, 0), tm(16, 0)), // ---XXX---
+			other: Between(tm(13, 0), tm(16, 0)), // --YYYY---
 			want:  false,
 		},
 		{
 			name:  "intersect, bound end earlier",
-			rng:   New(tm(14, 0), tm(16, 0)), // ---XXX---
-			other: New(tm(13, 0), tm(15, 0)), // --YYY----
+			rng:   Between(tm(14, 0), tm(16, 0)), // ---XXX---
+			other: Between(tm(13, 0), tm(15, 0)), // --YYY----
 			want:  false,
 		},
 	}
@@ -194,7 +194,7 @@ func TestDateRange_Contains(t *testing.T) {
 	}
 }
 
-func TestDateRange_Stratify(t *testing.T) {
+func TestRange_Stratify(t *testing.T) {
 	type args struct {
 		offset   time.Duration
 		duration time.Duration
@@ -208,30 +208,30 @@ func TestDateRange_Stratify(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  New(tm(1, 40), tm(2, 44)),
+			rng:  Between(tm(1, 40), tm(2, 44)),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				New(tm(1, 40), tm(2, 10)),
-				New(tm(1, 45), tm(2, 15)),
-				New(tm(1, 50), tm(2, 20)),
-				New(tm(1, 55), tm(2, 25)),
-				New(tm(2, 00), tm(2, 30)),
-				New(tm(2, 05), tm(2, 35)),
-				New(tm(2, 10), tm(2, 40)),
+				Between(tm(1, 40), tm(2, 10)),
+				Between(tm(1, 45), tm(2, 15)),
+				Between(tm(1, 50), tm(2, 20)),
+				Between(tm(1, 55), tm(2, 25)),
+				Between(tm(2, 00), tm(2, 30)),
+				Between(tm(2, 05), tm(2, 35)),
+				Between(tm(2, 10), tm(2, 40)),
 			},
 		},
 		{
 			name: "without space left at end",
-			rng:  New(tm(1, 40), tm(2, 40)),
+			rng:  Between(tm(1, 40), tm(2, 40)),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				New(tm(1, 40), tm(2, 10)),
-				New(tm(1, 45), tm(2, 15)),
-				New(tm(1, 50), tm(2, 20)),
-				New(tm(1, 55), tm(2, 25)),
-				New(tm(2, 00), tm(2, 30)),
-				New(tm(2, 05), tm(2, 35)),
-				New(tm(2, 10), tm(2, 40)),
+				Between(tm(1, 40), tm(2, 10)),
+				Between(tm(1, 45), tm(2, 15)),
+				Between(tm(1, 50), tm(2, 20)),
+				Between(tm(1, 55), tm(2, 25)),
+				Between(tm(2, 00), tm(2, 30)),
+				Between(tm(2, 05), tm(2, 35)),
+				Between(tm(2, 10), tm(2, 40)),
 			},
 		},
 	}
@@ -243,7 +243,7 @@ func TestDateRange_Stratify(t *testing.T) {
 	}
 }
 
-func TestDateRange_Split(t *testing.T) {
+func TestRange_Split(t *testing.T) {
 	type args struct {
 		offset   time.Duration
 		duration time.Duration
@@ -257,34 +257,34 @@ func TestDateRange_Split(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  New(tm(1, 40), tm(3, 0)),
+			rng:  Between(tm(1, 40), tm(3, 0)),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				New(tm(1, 40), tm(2, 10)),
-				New(tm(2, 15), tm(2, 45)),
+				Between(tm(1, 40), tm(2, 10)),
+				Between(tm(2, 15), tm(2, 45)),
 			},
 		},
 		{
 			name: "without space left at end",
-			rng:  New(tm(1, 40), tm(3, 20)),
+			rng:  Between(tm(1, 40), tm(3, 20)),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				New(tm(1, 40), tm(2, 10)),
-				New(tm(2, 15), tm(2, 45)),
-				New(tm(2, 50), tm(3, 20)),
+				Between(tm(1, 40), tm(2, 10)),
+				Between(tm(2, 15), tm(2, 45)),
+				Between(tm(2, 50), tm(3, 20)),
 			},
 		},
 		{
 			name: "zero interval",
-			rng:  New(tm(1, 30), tm(2, 0)),
+			rng:  Between(tm(1, 30), tm(2, 0)),
 			args: args{duration: 5 * time.Minute},
 			want: []Range{
-				New(tm(1, 30), tm(1, 35)),
-				New(tm(1, 35), tm(1, 40)),
-				New(tm(1, 40), tm(1, 45)),
-				New(tm(1, 45), tm(1, 50)),
-				New(tm(1, 50), tm(1, 55)),
-				New(tm(1, 55), tm(2, 0)),
+				Between(tm(1, 30), tm(1, 35)),
+				Between(tm(1, 35), tm(1, 40)),
+				Between(tm(1, 40), tm(1, 45)),
+				Between(tm(1, 45), tm(1, 50)),
+				Between(tm(1, 50), tm(1, 55)),
+				Between(tm(1, 55), tm(2, 0)),
 			},
 		},
 	}
@@ -296,7 +296,7 @@ func TestDateRange_Split(t *testing.T) {
 	}
 }
 
-func TestFlipDateRanges(t *testing.T) {
+func TestFlipRanges(t *testing.T) {
 	type args struct {
 		period Range
 		ranges []Range
@@ -310,71 +310,71 @@ func TestFlipDateRanges(t *testing.T) {
 		{
 			name: "flip within a day", fmt: "15:04",
 			args: args{
-				period: New(tm(0, 0), tm(23, 59)),
+				period: Between(tm(0, 0), tm(23, 59)),
 				ranges: []Range{
-					New(tm(13, 0), tm(14, 0)),
-					New(tm(14, 1), tm(15, 0)),
-					New(tm(16, 0), tm(20, 0)),
+					Between(tm(13, 0), tm(14, 0)),
+					Between(tm(14, 1), tm(15, 0)),
+					Between(tm(16, 0), tm(20, 0)),
 				},
 			},
 			want: []Range{
-				New(tm(0, 0), tm(13, 0)),
-				New(tm(14, 0), tm(14, 1)),
-				New(tm(15, 0), tm(16, 0)),
-				New(tm(20, 0), tm(23, 59)),
+				Between(tm(0, 0), tm(13, 0)),
+				Between(tm(14, 0), tm(14, 1)),
+				Between(tm(15, 0), tm(16, 0)),
+				Between(tm(20, 0), tm(23, 59)),
 			},
 		},
 		{
 			name: "no gap between the period and first, last range boundaries", fmt: "15:04",
 			args: args{
-				period: New(tm(0, 0), tm(23, 59)),
+				period: Between(tm(0, 0), tm(23, 59)),
 				ranges: []Range{
-					New(tm(0, 0), tm(14, 0)),
-					New(tm(14, 1), tm(15, 0)),
-					New(tm(16, 0), tm(20, 0)),
-					New(tm(20, 1), tm(23, 59)),
+					Between(tm(0, 0), tm(14, 0)),
+					Between(tm(14, 1), tm(15, 0)),
+					Between(tm(16, 0), tm(20, 0)),
+					Between(tm(20, 1), tm(23, 59)),
 				},
 			},
 			want: []Range{
-				New(tm(14, 0), tm(14, 1)),
-				New(tm(15, 0), tm(16, 0)),
-				New(tm(20, 0), tm(20, 1)),
+				Between(tm(14, 0), tm(14, 1)),
+				Between(tm(15, 0), tm(16, 0)),
+				Between(tm(20, 0), tm(20, 1)),
 			},
 		},
 		{
 			name: "flip within several days", fmt: "02 15:04",
 			args: args{
-				period: New(dhm(12, 13, 0), dhm(14, 16, 59)),
+				period: Between(dhm(12, 13, 0), dhm(14, 16, 59)),
 				ranges: []Range{
-					New(dhm(12, 13, 0), dhm(12, 14, 0)),
-					New(dhm(12, 14, 1), dhm(12, 15, 0)),
-					New(dhm(12, 16, 0), dhm(12, 20, 0)),
-					New(dhm(12, 23, 0), dhm(13, 6, 59)),
-					New(dhm(13, 8, 0), dhm(13, 23, 0)),
-					New(dhm(14, 1, 59), dhm(14, 14, 59)),
+					Between(dhm(12, 13, 0), dhm(12, 14, 0)),
+					Between(dhm(12, 14, 1), dhm(12, 15, 0)),
+					Between(dhm(12, 16, 0), dhm(12, 20, 0)),
+					Between(dhm(12, 23, 0), dhm(13, 6, 59)),
+					Between(dhm(13, 8, 0), dhm(13, 23, 0)),
+					Between(dhm(14, 1, 59), dhm(14, 14, 59)),
 				},
 			},
 			want: []Range{
-				New(dhm(12, 14, 0), dhm(12, 14, 1)),
-				New(dhm(12, 15, 0), dhm(12, 16, 0)),
-				New(dhm(12, 20, 0), dhm(12, 23, 0)),
-				New(dhm(13, 6, 59), dhm(13, 8, 0)),
-				New(dhm(13, 23, 0), dhm(14, 1, 59)),
-				New(dhm(14, 14, 59), dhm(14, 16, 59)),
+				Between(dhm(12, 14, 0), dhm(12, 14, 1)),
+				Between(dhm(12, 15, 0), dhm(12, 16, 0)),
+				Between(dhm(12, 20, 0), dhm(12, 23, 0)),
+				Between(dhm(13, 6, 59), dhm(13, 8, 0)),
+				Between(dhm(13, 23, 0), dhm(14, 1, 59)),
+				Between(dhm(14, 14, 59), dhm(14, 16, 59)),
 			},
 		},
 		{name: "empty range list", fmt: "02 15:04",
 			args: args{
-				period: New(dhm(12, 13, 0), dhm(14, 16, 59)),
+				period: Between(dhm(12, 13, 0), dhm(14, 16, 59)),
 				ranges: []Range{},
 			},
-			want: []Range{New(dhm(12, 13, 0), dhm(14, 16, 59))},
+			want: []Range{Between(dhm(12, 13, 0), dhm(14, 16, 59))},
 		},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			ranges := tt.args.period.FlipDateRanges(tt.args.ranges)
+			ranges := tt.args.period.Flip(tt.args.ranges)
 			assert.Equal(t,
 				formattedRanges(tt.want, tt.fmt),
 				formattedRanges(ranges, tt.fmt),
@@ -383,35 +383,35 @@ func TestFlipDateRanges(t *testing.T) {
 	}
 }
 
-func TestDateRange_Format(t *testing.T) {
+func TestRange_Format(t *testing.T) {
 	assert.Equal(t,
 		"[2021-06-12T00:00:00, 2021-06-12T03:05:00]",
 		Range{st: dt, dur: 3*time.Hour + 5*time.Minute}.Format("2006-01-02T15:04:05"),
 	)
 }
 
-func TestDateRange_UTC(t *testing.T) {
+func TestRange_UTC(t *testing.T) {
 	// won't have effect on machine in UTC ¯\_(ツ)_/¯
-	assert.Equal(t, Range{st: dt.In(time.Local), dur: 0}, New(dt, dt).In(time.Local))
+	assert.Equal(t, Range{st: dt.In(time.Local), dur: 0}, Between(dt, dt).In(time.Local))
 }
 
-func TestDateRange_String(t *testing.T) {
+func TestRange_String(t *testing.T) {
 	assert.Equal(t,
 		"[2021-06-12 00:00:00 +0000 UTC, 2021-06-12 03:05:00 +0000 UTC]",
 		Range{st: dt, dur: 3*time.Hour + 5*time.Minute}.String(),
 	)
 }
 
-func TestDateRange_Duration(t *testing.T) {
+func TestRange_Duration(t *testing.T) {
 	dur := 3*time.Hour + 5*time.Minute
 	assert.Equal(t, dur, Range{dur: dur}.Duration())
 }
 
-func TestDateRange_Start(t *testing.T) {
+func TestRange_Start(t *testing.T) {
 	assert.Equal(t, dt, Range{st: dt}.Start())
 }
 
-func TestDateRange_Empty(t *testing.T) {
+func TestRange_Empty(t *testing.T) {
 	tests := []struct {
 		name string
 		arg  Range
@@ -427,17 +427,30 @@ func TestDateRange_Empty(t *testing.T) {
 	}
 }
 
-func TestRange(t *testing.T) {
+func TestBetween(t *testing.T) {
 	t.Run("start after end", func(t *testing.T) {
-		assert.Panics(t, func() { New(dt.Add(3*time.Hour), dt) })
+		assert.Panics(t, func() { Between(dt.Add(3*time.Hour), dt) })
 	})
 
 	t.Run("without options", func(t *testing.T) {
-		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, New(dt, dt.Add(3*time.Hour)))
+		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, Between(dt, dt.Add(3*time.Hour)))
 	})
 
 	t.Run("with location", func(t *testing.T) {
-		dr := New(dt.In(time.Local), dt.Add(3*time.Hour).In(time.Local), In(time.UTC))
+		dr := Between(dt.In(time.Local), dt.Add(3*time.Hour).In(time.Local), In(time.UTC))
+
+		// won't have effect on machine in UTC ¯\_(ツ)_/¯
+		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, dr)
+	})
+}
+
+func TestNew(t *testing.T) {
+	t.Run("without options", func(t *testing.T) {
+		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, New(dt, 3*time.Hour))
+	})
+
+	t.Run("with location", func(t *testing.T) {
+		dr := New(dt.In(time.Local), 3*time.Hour, In(time.UTC))
 
 		// won't have effect on machine in UTC ¯\_(ツ)_/¯
 		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, dr)

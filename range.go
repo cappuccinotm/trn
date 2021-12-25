@@ -17,9 +17,19 @@ func In(loc *time.Location) Option {
 	return func(r *Range) { r.st = r.st.In(loc) }
 }
 
-// New returns the new Range in the given time bounds.
+// New makes a new Range with start at the given time and with the given
+// duration.
+func New(start time.Time, duration time.Duration, opts ...Option) Range {
+	res := Range{st: start, dur: duration}
+	for _, opt := range opts {
+		opt(&res)
+	}
+	return res
+}
+
+// Between returns the new Range in the given time bounds.
 // Range will get the location of the start timestamp.
-func New(start, end time.Time, opts ...Option) Range {
+func Between(start, end time.Time, opts ...Option) Range {
 	if start.After(end) {
 		panic("start is after the end")
 	}
@@ -133,12 +143,12 @@ func (r Range) Truncate(bounds Range) Range {
 	}
 }
 
-// FlipDateRanges within the given period.
+// Flip within the given period.
 //
 // The boundaries of the given ranges are considered to be inclusive, means
 // that the flipped ranges will start or end at the exact nanosecond where
 // the boundary from the input starts or ends.
-func (r Range) FlipDateRanges(ranges []Range) []Range {
+func (r Range) Flip(ranges []Range) []Range {
 	if len(ranges) == 0 {
 		return []Range{r}
 	}
