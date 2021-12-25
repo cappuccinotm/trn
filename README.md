@@ -42,7 +42,7 @@ For more examples see [test file](examples_test.go).
 - `func (r Range) Split(duration time.Duration, interval time.Duration) []Range`
 
   Slices the range into smaller ones with fixed `duration` and fixed `interval` 
-  the **end** of the one range and **start** of next range.
+  between the **end** of the one range and **start** of next range.
   In case if the last interval doesn't fit into the given duration, `Split` 
   won't return it.
 
