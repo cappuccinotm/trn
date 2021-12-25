@@ -1,0 +1,44 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.17
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.42.1
+          skip-go-installation: true
+
+      - name: Run tests and extract coverage
+        run: |
+          go test -timeout=60s -covermode=count -coverprofile=$GITHUB_WORKSPACE/profile.cov_tmp ./...
+          cat $GITHUB_WORKSPACE/profile.cov_tmp | grep -v "mock_" > $GITHUB_WORKSPACE/profile.cov
+        env:
+          CGO_ENABLED: 0
+
+      - name: Submit coverage to codecov
+        run: |
+          cat $GITHUB_WORKSPACE/profile.cov > $GITHUB_WORKSPACE/coverage.txt
+          cd $GITHUB_WORKSPACE
+          bash <(curl -s https://codecov.io/bash)
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          GOFLAGS: "-mod=mod"
+          CGO_ENABLED: 0
