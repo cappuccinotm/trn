@@ -110,3 +110,7 @@ times are formatted with the next template:
 ```go
 const defaultRangeFmt = "2006-01-02 15:04:05.999999999 -0700 MST"
 ```
+
+# Status
+The code was extracted from existing project and still under development. Until 
+v1.x released the API may change.
