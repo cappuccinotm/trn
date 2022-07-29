@@ -157,12 +157,11 @@ func (r Range) Truncate(bounds Range) Range {
 		// ---XXX---
 		// ----YYY--
 		return Range{st: bounds.st, dur: r.End().Sub(bounds.st)}
-	case r.st.After(bounds.st) && r.End().After(bounds.End()):
+	default:
+		//  r.st.After(bounds.st) && r.End().After(bounds.End())
 		// ---XXX---
 		// --YYY----
 		return Range{st: r.st, dur: bounds.End().Sub(r.st)}
-	default:
-		panic("trn: should never happen")
 	}
 }
 
