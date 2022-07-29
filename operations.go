@@ -88,3 +88,21 @@ type boundary struct {
 	tm  time.Time
 	typ boundaryType
 }
+
+// MustRanges is a helper that accepts the result of function, that returns
+// ranges and panics, if err is returned.
+func MustRanges(r []Range, err error) []Range {
+	if err != nil {
+		panic(err)
+	}
+	return r
+}
+
+// MustRange is a helper that accepts the result of function, that returns
+// a single range and panics, if err is returned.
+func MustRange(r Range, err error) Range {
+	if err != nil {
+		panic(err)
+	}
+	return r
+}

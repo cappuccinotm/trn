@@ -4,9 +4,9 @@ package trn
 
 import (
 	"fmt"
-	"time"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 )
 
 const defaultRangeFmt = "2006-01-02 15:04:05.999999999 -0700 MST"
@@ -157,12 +157,11 @@ func (r Range) Truncate(bounds Range) Range {
 		// ---XXX---
 		// ----YYY--
 		return Range{st: bounds.st, dur: r.End().Sub(bounds.st)}
-	case r.st.After(bounds.st) && r.End().After(bounds.End()):
+	default:
+		//  r.st.After(bounds.st) && r.End().After(bounds.End())
 		// ---XXX---
 		// --YYY----
 		return Range{st: r.st, dur: bounds.End().Sub(r.st)}
-	default:
-		panic("trn: should never happen")
 	}
 }
 
@@ -202,33 +201,6 @@ func (r Range) flipValidRanges(ranges []Range) []Range {
 	}
 
 	return res
-}
-
-// MustSplit does the same as Split, but panics in case of any error.
-func (r Range) MustSplit(duration time.Duration, interval time.Duration) []Range {
-	rngs, err := r.Split(duration, interval)
-	if err != nil {
-		panic(err)
-	}
-	return rngs
-}
-
-// MustStratify does the same as Stratify, but panics in case of any error.
-func (r Range) MustStratify(duration time.Duration, interval time.Duration) []Range {
-	rngs, err := r.Stratify(duration, interval)
-	if err != nil {
-		panic(err)
-	}
-	return rngs
-}
-
-// MustBetween does the same as Between, but panics, instead of returning error.
-func MustBetween(start, end time.Time, opts ...Option) Range {
-	rng, err := Between(start, end, opts...)
-	if err != nil {
-		panic(err)
-	}
-	return rng
 }
 
 // Error describes any error appeared in this package.

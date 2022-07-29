@@ -48,63 +48,75 @@ func TestRange_Truncate(t *testing.T) {
 	}{
 		{
 			name:   "doesn't intersect (earlier)",
-			rng:    MustBetween(tm(13, 0), tm(14, 0)), // -XXX-----
-			bounds: MustBetween(tm(15, 0), tm(16, 0)), // -----YYY-
+			rng:    MustRange(Between(tm(13, 0), tm(14, 0))), // -XXX-----
+			bounds: MustRange(Between(tm(15, 0), tm(16, 0))), // -----YYY-
 			want:   Range{},
 		},
 		{
 			name:   "doesn't intersect (later)",
-			rng:    MustBetween(tm(15, 0), tm(16, 0)), // -----XXX-
-			bounds: MustBetween(tm(13, 0), tm(14, 0)), // -YYY-----
+			rng:    MustRange(Between(tm(15, 0), tm(16, 0))), // -----XXX-
+			bounds: MustRange(Between(tm(13, 0), tm(14, 0))), // -YYY-----
 			want:   Range{},
 		},
 		{
 			name:   "overlaps the bounds",
-			rng:    MustBetween(tm(13, 0), tm(16, 0)), // -XXXXXXX-
-			bounds: MustBetween(tm(14, 0), tm(15, 0)), // ---YYY---
-			want:   MustBetween(tm(14, 0), tm(15, 0)),
+			rng:    MustRange(Between(tm(13, 0), tm(16, 0))), // -XXXXXXX-
+			bounds: MustRange(Between(tm(14, 0), tm(15, 0))), // ---YYY---
+			want:   MustRange(Between(tm(14, 0), tm(15, 0))),
 		},
 		{
 			name:   "bounds overlap",
-			rng:    MustBetween(tm(14, 0), tm(15, 0)), // ---XXX---
-			bounds: MustBetween(tm(13, 0), tm(16, 0)), // -YYYYYYY-
-			want:   MustBetween(tm(14, 0), tm(15, 0)),
+			rng:    MustRange(Between(tm(14, 0), tm(15, 0))), // ---XXX---
+			bounds: MustRange(Between(tm(13, 0), tm(16, 0))), // -YYYYYYY-
+			want:   MustRange(Between(tm(14, 0), tm(15, 0))),
 		},
 		{
 			name:   "intersect, bound end later",
-			rng:    MustBetween(tm(13, 0), tm(15, 0)), // ---XXX---
-			bounds: MustBetween(tm(14, 0), tm(16, 0)), // ----YYY--
-			want:   MustBetween(tm(14, 0), tm(15, 0)),
+			rng:    MustRange(Between(tm(13, 0), tm(15, 0))), // ---XXX---
+			bounds: MustRange(Between(tm(14, 0), tm(16, 0))), // ----YYY--
+			want:   MustRange(Between(tm(14, 0), tm(15, 0))),
 		},
 		{
 			name:   "overlaps, starts are equal",
-			rng:    MustBetween(tm(13, 0), tm(16, 0)), // --XXXX---
-			bounds: MustBetween(tm(13, 0), tm(15, 0)), // --YYY----
-			want:   MustBetween(tm(13, 0), tm(15, 0)),
+			rng:    MustRange(Between(tm(13, 0), tm(16, 0))), // --XXXX---
+			bounds: MustRange(Between(tm(13, 0), tm(15, 0))), // --YYY----
+			want:   MustRange(Between(tm(13, 0), tm(15, 0))),
 		},
 		{
 			name:   "bounds overlap, starts are equal",
-			rng:    MustBetween(tm(13, 0), tm(15, 0)), // --XXX----
-			bounds: MustBetween(tm(13, 0), tm(16, 0)), // --YYYY---
-			want:   MustBetween(tm(13, 0), tm(15, 0)),
+			rng:    MustRange(Between(tm(13, 0), tm(15, 0))), // --XXX----
+			bounds: MustRange(Between(tm(13, 0), tm(16, 0))), // --YYYY---
+			want:   MustRange(Between(tm(13, 0), tm(15, 0))),
 		},
 		{
 			name:   "overlaps, ends are equal",
-			rng:    MustBetween(tm(13, 0), tm(16, 0)), // --XXXX---
-			bounds: MustBetween(tm(14, 0), tm(16, 0)), // ---YYY---
-			want:   MustBetween(tm(14, 0), tm(16, 0)),
+			rng:    MustRange(Between(tm(13, 0), tm(16, 0))), // --XXXX---
+			bounds: MustRange(Between(tm(14, 0), tm(16, 0))), // ---YYY---
+			want:   MustRange(Between(tm(14, 0), tm(16, 0))),
 		},
 		{
 			name:   "bounds overlap, ends are equal",
-			rng:    MustBetween(tm(14, 0), tm(16, 0)), // ---XXX---
-			bounds: MustBetween(tm(13, 0), tm(16, 0)), // --YYYY---
-			want:   MustBetween(tm(14, 0), tm(16, 0)),
+			rng:    MustRange(Between(tm(14, 0), tm(16, 0))), // ---XXX---
+			bounds: MustRange(Between(tm(13, 0), tm(16, 0))), // --YYYY---
+			want:   MustRange(Between(tm(14, 0), tm(16, 0))),
 		},
 		{
 			name:   "intersect, bound end earlier",
-			rng:    MustBetween(tm(14, 0), tm(16, 0)), // ---XXX---
-			bounds: MustBetween(tm(13, 0), tm(15, 0)), // --YYY----
-			want:   MustBetween(tm(14, 0), tm(15, 0)),
+			rng:    MustRange(Between(tm(14, 0), tm(16, 0))), // ---XXX---
+			bounds: MustRange(Between(tm(13, 0), tm(15, 0))), // --YYY----
+			want:   MustRange(Between(tm(14, 0), tm(15, 0))),
+		},
+		{
+			name:   "equal ranges",
+			rng:    MustRange(Between(tm(14, 0), tm(16, 0))), // ---XXX---
+			bounds: MustRange(Between(tm(14, 0), tm(16, 0))), // ---YYY---
+			want:   MustRange(Between(tm(14, 0), tm(16, 0))),
+		},
+		{
+			name:   "empty ranges",
+			rng:    Range{},
+			bounds: Range{},
+			want:   Range{},
 		},
 	}
 	for _, tt := range tests {
@@ -128,62 +140,62 @@ func TestRange_Contains(t *testing.T) {
 	}{
 		{
 			name:  "doesn't intersect (earlier)",
-			rng:   MustBetween(tm(13, 0), tm(14, 0)), // -XXX-----
-			other: MustBetween(tm(15, 0), tm(16, 0)), // -----YYY-
+			rng:   MustRange(Between(tm(13, 0), tm(14, 0))), // -XXX-----
+			other: MustRange(Between(tm(15, 0), tm(16, 0))), // -----YYY-
 			want:  false,
 		},
 		{
 			name:  "doesn't intersect (later)",
-			rng:   MustBetween(tm(15, 0), tm(16, 0)), // -----XXX-
-			other: MustBetween(tm(13, 0), tm(14, 0)), // -YYY-----
+			rng:   MustRange(Between(tm(15, 0), tm(16, 0))), // -----XXX-
+			other: MustRange(Between(tm(13, 0), tm(14, 0))), // -YYY-----
 			want:  false,
 		},
 		{
 			name:  "overlaps the bounds",
-			rng:   MustBetween(tm(13, 0), tm(16, 0)), // -XXXXXXX-
-			other: MustBetween(tm(14, 0), tm(15, 0)), // ---YYY---
+			rng:   MustRange(Between(tm(13, 0), tm(16, 0))), // -XXXXXXX-
+			other: MustRange(Between(tm(14, 0), tm(15, 0))), // ---YYY---
 			want:  true,
 		},
 		{
 			name:  "bounds overlap",
-			rng:   MustBetween(tm(14, 0), tm(15, 0)), // ---XXX---
-			other: MustBetween(tm(13, 0), tm(16, 0)), // -YYYYYYY-
+			rng:   MustRange(Between(tm(14, 0), tm(15, 0))), // ---XXX---
+			other: MustRange(Between(tm(13, 0), tm(16, 0))), // -YYYYYYY-
 			want:  false,
 		},
 		{
 			name:  "intersect, bound end later",
-			rng:   MustBetween(tm(13, 0), tm(15, 0)), // ---XXX---
-			other: MustBetween(tm(14, 0), tm(16, 0)), // ----YYY--
+			rng:   MustRange(Between(tm(13, 0), tm(15, 0))), // ---XXX---
+			other: MustRange(Between(tm(14, 0), tm(16, 0))), // ----YYY--
 			want:  false,
 		},
 		{
 			name:  "overlaps, starts are equal",
-			rng:   MustBetween(tm(13, 0), tm(16, 0)), // --XXXX---
-			other: MustBetween(tm(13, 0), tm(15, 0)), // --YYY----
+			rng:   MustRange(Between(tm(13, 0), tm(16, 0))), // --XXXX---
+			other: MustRange(Between(tm(13, 0), tm(15, 0))), // --YYY----
 			want:  true,
 		},
 		{
 			name:  "bounds overlap, starts are equal",
-			rng:   MustBetween(tm(13, 0), tm(15, 0)), // --XXX----
-			other: MustBetween(tm(13, 0), tm(16, 0)), // --YYYY---
+			rng:   MustRange(Between(tm(13, 0), tm(15, 0))), // --XXX----
+			other: MustRange(Between(tm(13, 0), tm(16, 0))), // --YYYY---
 			want:  false,
 		},
 		{
 			name:  "overlaps, ends are equal",
-			rng:   MustBetween(tm(13, 0), tm(16, 0)), // --XXXX---
-			other: MustBetween(tm(14, 0), tm(16, 0)), // ---YYY---
+			rng:   MustRange(Between(tm(13, 0), tm(16, 0))), // --XXXX---
+			other: MustRange(Between(tm(14, 0), tm(16, 0))), // ---YYY---
 			want:  true,
 		},
 		{
 			name:  "bounds overlap, ends are equal",
-			rng:   MustBetween(tm(14, 0), tm(16, 0)), // ---XXX---
-			other: MustBetween(tm(13, 0), tm(16, 0)), // --YYYY---
+			rng:   MustRange(Between(tm(14, 0), tm(16, 0))), // ---XXX---
+			other: MustRange(Between(tm(13, 0), tm(16, 0))), // --YYYY---
 			want:  false,
 		},
 		{
 			name:  "intersect, bound end earlier",
-			rng:   MustBetween(tm(14, 0), tm(16, 0)), // ---XXX---
-			other: MustBetween(tm(13, 0), tm(15, 0)), // --YYY----
+			rng:   MustRange(Between(tm(14, 0), tm(16, 0))), // ---XXX---
+			other: MustRange(Between(tm(13, 0), tm(15, 0))), // --YYY----
 			want:  false,
 		},
 	}
@@ -208,30 +220,30 @@ func TestRange_Stratify(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  MustBetween(tm(1, 40), tm(2, 44)),
+			rng:  MustRange(Between(tm(1, 40), tm(2, 44))),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				MustBetween(tm(1, 40), tm(2, 10)),
-				MustBetween(tm(1, 45), tm(2, 15)),
-				MustBetween(tm(1, 50), tm(2, 20)),
-				MustBetween(tm(1, 55), tm(2, 25)),
-				MustBetween(tm(2, 00), tm(2, 30)),
-				MustBetween(tm(2, 05), tm(2, 35)),
-				MustBetween(tm(2, 10), tm(2, 40)),
+				MustRange(Between(tm(1, 40), tm(2, 10))),
+				MustRange(Between(tm(1, 45), tm(2, 15))),
+				MustRange(Between(tm(1, 50), tm(2, 20))),
+				MustRange(Between(tm(1, 55), tm(2, 25))),
+				MustRange(Between(tm(2, 00), tm(2, 30))),
+				MustRange(Between(tm(2, 05), tm(2, 35))),
+				MustRange(Between(tm(2, 10), tm(2, 40))),
 			},
 		},
 		{
 			name: "without space left at end",
-			rng:  MustBetween(tm(1, 40), tm(2, 40)),
+			rng:  MustRange(Between(tm(1, 40), tm(2, 40))),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				MustBetween(tm(1, 40), tm(2, 10)),
-				MustBetween(tm(1, 45), tm(2, 15)),
-				MustBetween(tm(1, 50), tm(2, 20)),
-				MustBetween(tm(1, 55), tm(2, 25)),
-				MustBetween(tm(2, 00), tm(2, 30)),
-				MustBetween(tm(2, 05), tm(2, 35)),
-				MustBetween(tm(2, 10), tm(2, 40)),
+				MustRange(Between(tm(1, 40), tm(2, 10))),
+				MustRange(Between(tm(1, 45), tm(2, 15))),
+				MustRange(Between(tm(1, 50), tm(2, 20))),
+				MustRange(Between(tm(1, 55), tm(2, 25))),
+				MustRange(Between(tm(2, 00), tm(2, 30))),
+				MustRange(Between(tm(2, 05), tm(2, 35))),
+				MustRange(Between(tm(2, 10), tm(2, 40))),
 			},
 		},
 		{name: "zero interval", args: args{interval: 0}, wantErr: ErrZeroDurationInterval},
@@ -262,39 +274,39 @@ func TestRange_Split(t *testing.T) {
 	}{
 		{
 			name: "space left at end",
-			rng:  MustBetween(tm(1, 40), tm(3, 0)),
+			rng:  MustRange(Between(tm(1, 40), tm(3, 0))),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				MustBetween(tm(1, 40), tm(2, 10)),
-				MustBetween(tm(2, 15), tm(2, 45)),
+				MustRange(Between(tm(1, 40), tm(2, 10))),
+				MustRange(Between(tm(2, 15), tm(2, 45))),
 			},
 		},
 		{
 			name: "without space left at end",
-			rng:  MustBetween(tm(1, 40), tm(3, 20)),
+			rng:  MustRange(Between(tm(1, 40), tm(3, 20))),
 			args: args{duration: 30 * time.Minute, interval: 5 * time.Minute},
 			want: []Range{
-				MustBetween(tm(1, 40), tm(2, 10)),
-				MustBetween(tm(2, 15), tm(2, 45)),
-				MustBetween(tm(2, 50), tm(3, 20)),
+				MustRange(Between(tm(1, 40), tm(2, 10))),
+				MustRange(Between(tm(2, 15), tm(2, 45))),
+				MustRange(Between(tm(2, 50), tm(3, 20))),
 			},
 		},
 		{
 			name: "zero interval",
-			rng:  MustBetween(tm(1, 30), tm(2, 0)),
+			rng:  MustRange(Between(tm(1, 30), tm(2, 0))),
 			args: args{duration: 5 * time.Minute},
 			want: []Range{
-				MustBetween(tm(1, 30), tm(1, 35)),
-				MustBetween(tm(1, 35), tm(1, 40)),
-				MustBetween(tm(1, 40), tm(1, 45)),
-				MustBetween(tm(1, 45), tm(1, 50)),
-				MustBetween(tm(1, 50), tm(1, 55)),
-				MustBetween(tm(1, 55), tm(2, 0)),
+				MustRange(Between(tm(1, 30), tm(1, 35))),
+				MustRange(Between(tm(1, 35), tm(1, 40))),
+				MustRange(Between(tm(1, 40), tm(1, 45))),
+				MustRange(Between(tm(1, 45), tm(1, 50))),
+				MustRange(Between(tm(1, 50), tm(1, 55))),
+				MustRange(Between(tm(1, 55), tm(2, 0))),
 			},
 		},
 		{
 			name:    "zero duration",
-			rng:     MustBetween(tm(1, 30), tm(2, 0)),
+			rng:     MustRange(Between(tm(1, 30), tm(2, 0))),
 			args:    args{duration: 0, interval: 5 * time.Minute},
 			wantErr: ErrZeroDurationInterval,
 		},
@@ -322,65 +334,65 @@ func TestFlipRanges(t *testing.T) {
 		{
 			name: "flip within a day", fmt: "15:04",
 			args: args{
-				period: MustBetween(tm(0, 0), tm(23, 59)),
+				period: MustRange(Between(tm(0, 0), tm(23, 59))),
 				ranges: []Range{
-					MustBetween(tm(13, 0), tm(14, 0)),
-					MustBetween(tm(14, 1), tm(15, 0)),
-					MustBetween(tm(16, 0), tm(20, 0)),
+					MustRange(Between(tm(13, 0), tm(14, 0))),
+					MustRange(Between(tm(14, 1), tm(15, 0))),
+					MustRange(Between(tm(16, 0), tm(20, 0))),
 				},
 			},
 			want: []Range{
-				MustBetween(tm(0, 0), tm(13, 0)),
-				MustBetween(tm(14, 0), tm(14, 1)),
-				MustBetween(tm(15, 0), tm(16, 0)),
-				MustBetween(tm(20, 0), tm(23, 59)),
+				MustRange(Between(tm(0, 0), tm(13, 0))),
+				MustRange(Between(tm(14, 0), tm(14, 1))),
+				MustRange(Between(tm(15, 0), tm(16, 0))),
+				MustRange(Between(tm(20, 0), tm(23, 59))),
 			},
 		},
 		{
 			name: "no gap between the period and first, last range boundaries", fmt: "15:04",
 			args: args{
-				period: MustBetween(tm(0, 0), tm(23, 59)),
+				period: MustRange(Between(tm(0, 0), tm(23, 59))),
 				ranges: []Range{
-					MustBetween(tm(0, 0), tm(14, 0)),
-					MustBetween(tm(14, 1), tm(15, 0)),
-					MustBetween(tm(16, 0), tm(20, 0)),
-					MustBetween(tm(20, 1), tm(23, 59)),
+					MustRange(Between(tm(0, 0), tm(14, 0))),
+					MustRange(Between(tm(14, 1), tm(15, 0))),
+					MustRange(Between(tm(16, 0), tm(20, 0))),
+					MustRange(Between(tm(20, 1), tm(23, 59))),
 				},
 			},
 			want: []Range{
-				MustBetween(tm(14, 0), tm(14, 1)),
-				MustBetween(tm(15, 0), tm(16, 0)),
-				MustBetween(tm(20, 0), tm(20, 1)),
+				MustRange(Between(tm(14, 0), tm(14, 1))),
+				MustRange(Between(tm(15, 0), tm(16, 0))),
+				MustRange(Between(tm(20, 0), tm(20, 1))),
 			},
 		},
 		{
 			name: "flip within several days", fmt: "02 15:04",
 			args: args{
-				period: MustBetween(dhm(12, 13, 0), dhm(14, 16, 59)),
+				period: MustRange(Between(dhm(12, 13, 0), dhm(14, 16, 59))),
 				ranges: []Range{
-					MustBetween(dhm(12, 13, 0), dhm(12, 14, 0)),
-					MustBetween(dhm(12, 14, 1), dhm(12, 15, 0)),
-					MustBetween(dhm(12, 16, 0), dhm(12, 20, 0)),
-					MustBetween(dhm(12, 23, 0), dhm(13, 6, 59)),
-					MustBetween(dhm(13, 8, 0), dhm(13, 23, 0)),
-					MustBetween(dhm(14, 1, 59), dhm(14, 14, 59)),
+					MustRange(Between(dhm(12, 13, 0), dhm(12, 14, 0))),
+					MustRange(Between(dhm(12, 14, 1), dhm(12, 15, 0))),
+					MustRange(Between(dhm(12, 16, 0), dhm(12, 20, 0))),
+					MustRange(Between(dhm(12, 23, 0), dhm(13, 6, 59))),
+					MustRange(Between(dhm(13, 8, 0), dhm(13, 23, 0))),
+					MustRange(Between(dhm(14, 1, 59), dhm(14, 14, 59))),
 				},
 			},
 			want: []Range{
-				MustBetween(dhm(12, 14, 0), dhm(12, 14, 1)),
-				MustBetween(dhm(12, 15, 0), dhm(12, 16, 0)),
-				MustBetween(dhm(12, 20, 0), dhm(12, 23, 0)),
-				MustBetween(dhm(13, 6, 59), dhm(13, 8, 0)),
-				MustBetween(dhm(13, 23, 0), dhm(14, 1, 59)),
-				MustBetween(dhm(14, 14, 59), dhm(14, 16, 59)),
+				MustRange(Between(dhm(12, 14, 0), dhm(12, 14, 1))),
+				MustRange(Between(dhm(12, 15, 0), dhm(12, 16, 0))),
+				MustRange(Between(dhm(12, 20, 0), dhm(12, 23, 0))),
+				MustRange(Between(dhm(13, 6, 59), dhm(13, 8, 0))),
+				MustRange(Between(dhm(13, 23, 0), dhm(14, 1, 59))),
+				MustRange(Between(dhm(14, 14, 59), dhm(14, 16, 59))),
 			},
 		},
 		{name: "empty range list", fmt: "02 15:04",
 			args: args{
-				period: MustBetween(dhm(12, 13, 0), dhm(14, 16, 59)),
+				period: MustRange(Between(dhm(12, 13, 0), dhm(14, 16, 59))),
 				ranges: []Range{},
 			},
-			want: []Range{MustBetween(dhm(12, 13, 0), dhm(14, 16, 59))},
+			want: []Range{MustRange(Between(dhm(12, 13, 0), dhm(14, 16, 59)))},
 		},
 	}
 	for _, tt := range tests {
@@ -404,7 +416,7 @@ func TestRange_Format(t *testing.T) {
 
 func TestRange_UTC(t *testing.T) {
 	// won't have effect on machine in UTC ¯\_(ツ)_/¯
-	assert.Equal(t, Range{st: dt.In(time.Local), dur: 0}, MustBetween(dt, dt).In(time.Local))
+	assert.Equal(t, Range{st: dt.In(time.Local), dur: 0}, MustRange(Between(dt, dt)).In(time.Local))
 }
 
 func TestRange_String(t *testing.T) {
@@ -477,37 +489,6 @@ func TestBetween(t *testing.T) {
 	}
 }
 
-func TestMustSplit(t *testing.T) {
-	assert.Panics(t, func() {
-		New(tm(1, 30), 30*time.Minute).MustSplit(0, 15*time.Minute)
-	})
-
-	assert.NotPanics(t, func() {
-		rngs := New(tm(1, 40), 1*time.Hour+20*time.Minute).
-			MustSplit(30*time.Minute, 5*time.Minute)
-		assert.Equal(t, []Range{
-			MustBetween(tm(1, 40), tm(2, 10)),
-			MustBetween(tm(2, 15), tm(2, 45)),
-		}, rngs)
-	})
-}
-
-func TestMustStratify(t *testing.T) {
-	assert.Panics(t, func() {
-		New(tm(1, 30), 30*time.Minute).MustStratify(0, 15*time.Minute)
-	})
-
-	assert.NotPanics(t, func() {
-		rngs := New(tm(1, 40), 20*time.Minute).
-			MustStratify(10*time.Minute, 5*time.Minute)
-		assert.Equal(t, []Range{
-			New(tm(1, 40), 10*time.Minute),
-			New(tm(1, 45), 10*time.Minute),
-			New(tm(1, 50), 10*time.Minute),
-		}, rngs)
-	})
-}
-
 func TestNew(t *testing.T) {
 	t.Run("without options", func(t *testing.T) {
 		assert.Equal(t, Range{st: dt, dur: 3 * time.Hour}, New(dt, 3*time.Hour))
@@ -533,14 +514,4 @@ func TestRange_GoString(t *testing.T) {
 
 func TestError_Error(t *testing.T) {
 	assert.Equal(t, "blah", Error("blah").Error())
-}
-
-func TestMustBetween(t *testing.T) {
-	assert.Panics(t, func() { MustBetween(dt.Add(3*time.Hour), dt) })
-	assert.NotPanics(t, func() {
-		assert.Equal(t,
-			Range{st: dt, dur: 3 * time.Hour,},
-			MustBetween(dt, dt.Add(3*time.Hour)),
-		)
-	})
 }
