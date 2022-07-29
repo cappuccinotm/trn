@@ -106,6 +106,18 @@ func TestRange_Truncate(t *testing.T) {
 			bounds: MustRange(Between(tm(13, 0), tm(15, 0))), // --YYY----
 			want:   MustRange(Between(tm(14, 0), tm(15, 0))),
 		},
+		{
+			name:   "equal ranges",
+			rng:    MustRange(Between(tm(14, 0), tm(16, 0))), // ---XXX---
+			bounds: MustRange(Between(tm(14, 0), tm(16, 0))), // ---YYY---
+			want:   MustRange(Between(tm(14, 0), tm(16, 0))),
+		},
+		{
+			name:   "empty ranges",
+			rng:    Range{},
+			bounds: Range{},
+			want:   Range{},
+		},
 	}
 	for _, tt := range tests {
 		tt := tt
