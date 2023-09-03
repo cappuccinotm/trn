@@ -182,6 +182,21 @@ func (r Range) Flip(ranges []Range) []Range {
 	return r.flipValidRanges(rngs)
 }
 
+func (r Range) MarshalStartEndTime() {
+	data := map[string]interface{}{
+		"Starttime": r.st,
+		"Endtime":   r.End(),
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return
+	}
+
+	fmt.Println("JSON Data:", string(jsonData))
+}
+
 func (r Range) flipValidRanges(ranges []Range) []Range {
 	var res []Range
 
