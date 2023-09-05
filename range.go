@@ -53,8 +53,8 @@ type Range struct {
 }
 
 type MarshalTime struct {
-	StartTime time.Time `json:StartTIme`
-	EndTime   time.Time `json:EndTime`
+	StartTime time.Time `json:"StartTIme"`
+	EndTime   time.Time `json:"EndTime"`
 }
 
 // String implements fmt.Stringer to print and log Range properly
@@ -201,6 +201,19 @@ func (r Range) MarshalStartEndTime() {
 	}
 
 	fmt.Println("JSON Data:", string(jsonData))
+}
+
+func (r *Range) UnmarshalStartEndTime(jsonData []byte) error {
+	var data MarshalTime
+
+	if err := json.Unmarshal(jsonData, &data); err != nil {
+		return err
+	}
+
+	r.st = data.StartTime
+	r.dur = data.EndTime.Sub(data.StartTime)
+
+	return nil
 }
 
 func (r Range) flipValidRanges(ranges []Range) []Range {
