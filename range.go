@@ -3,6 +3,7 @@
 package trn
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -49,6 +50,11 @@ func Between(start, end time.Time, opts ...Option) (Range, error) {
 type Range struct {
 	st  time.Time
 	dur time.Duration
+}
+
+type MarshalTime struct {
+	StartTime time.Time `json:StartTIme`
+	EndTime   time.Time `json:EndTime`
 }
 
 // String implements fmt.Stringer to print and log Range properly
@@ -183,9 +189,9 @@ func (r Range) Flip(ranges []Range) []Range {
 }
 
 func (r Range) MarshalStartEndTime() {
-	data := map[string]interface{}{
-		"Starttime": r.st,
-		"Endtime":   r.End(),
+	data := MarshalTime{
+		StartTime: r.st,
+		EndTime:   r.End(),
 	}
 
 	jsonData, err := json.Marshal(data)
