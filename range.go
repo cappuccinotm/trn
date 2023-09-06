@@ -52,7 +52,7 @@ type Range struct {
 	dur time.Duration
 }
 
-type MarshalTime struct {
+type marshalTime struct {
 	StartTime time.Time `json:"StartTIme"`
 	EndTime   time.Time `json:"EndTime"`
 }
@@ -188,8 +188,8 @@ func (r Range) Flip(ranges []Range) []Range {
 	return r.flipValidRanges(rngs)
 }
 
-func (r Range) MarshalStartEndTime() {
-	data := MarshalTime{
+func (r Range) MarshalJSON() ([]byte, error) {
+	data := marshalTime{
 		StartTime: r.st,
 		EndTime:   r.End(),
 	}
@@ -197,14 +197,14 @@ func (r Range) MarshalStartEndTime() {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println("Error marshaling JSON:", err)
-		return
+		return nil, err
 	}
 
-	fmt.Println("JSON Data:", string(jsonData))
+	return jsonData, nil
 }
 
-func (r *Range) UnmarshalStartEndTime(jsonData []byte) error {
-	var data MarshalTime
+func (r *Range) UnmarshalJSON(jsonData []byte) error {
+	var data marshalTime
 
 	if err := json.Unmarshal(jsonData, &data); err != nil {
 		return err
