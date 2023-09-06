@@ -1,6 +1,7 @@
 package trn
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -514,4 +515,52 @@ func TestRange_GoString(t *testing.T) {
 
 func TestError_Error(t *testing.T) {
 	assert.Equal(t, "blah", Error("blah").Error())
+}
+func TestRangeMarshalJSON(t *testing.T) {
+	// Create a sample Range instance
+	startTime := time.Date(2023, time.September, 6, 12, 0, 0, 0, time.UTC)
+	duration := time.Hour * 2
+	r := Range{st: startTime, dur: duration}
+
+	// Marshal the Range to JSON
+	jsonData, err := r.MarshalJSON()
+	if err != nil {
+		t.Fatalf("Error marshaling Range to JSON: %v", err)
+	}
+
+	// Unmarshal the JSON data back into a Range
+	var unmarshaledRange Range
+	err = json.Unmarshal(jsonData, &unmarshaledRange)
+	if err != nil {
+		t.Fatalf("Error unmarshaling JSON to Range: %v", err)
+	}
+
+	// Check if the unmarshaled Range has the same start and end time components
+	if !unmarshaledRange.st.Equal(startTime) || unmarshaledRange.dur != duration {
+		t.Errorf("Expected: %v, Got: %v", r, unmarshaledRange)
+	}
+}
+
+func TestRangeUnmarshalJSON(t *testing.T) {
+	// Define a JSON string representing a Range
+	jsonData := []byte(`{"StartTime":"2023-09-06T12:00:00Z","EndTime":"2023-09-06T14:00:00Z"}`)
+
+	// Create an empty Range
+	var r Range
+
+	// Unmarshal the JSON data into the Range
+	err := r.UnmarshalJSON(jsonData)
+	if err != nil {
+		t.Fatalf("Error unmarshaling JSON to Range: %v", err)
+	}
+
+	// Define the expected Range
+	expectedStartTime := time.Date(2023, time.September, 6, 12, 0, 0, 0, time.UTC)
+	expectedEndTime := time.Date(2023, time.September, 6, 14, 0, 0, 0, time.UTC)
+	expectedRange := Range{st: expectedStartTime, dur: expectedEndTime.Sub(expectedStartTime)}
+
+	// Check if the unmarshaled Range has the same start and end time components
+	if !r.st.Equal(expectedStartTime) || r.dur != expectedRange.dur {
+		t.Errorf("Expected: %v, Got: %v", expectedRange, r)
+	}
 }
