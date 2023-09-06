@@ -3,6 +3,7 @@
 package trn
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -49,6 +50,11 @@ func Between(start, end time.Time, opts ...Option) (Range, error) {
 type Range struct {
 	st  time.Time
 	dur time.Duration
+}
+
+type marshalTime struct {
+	StartTime time.Time `json:"StartTIme"`
+	EndTime   time.Time `json:"EndTime"`
 }
 
 // String implements fmt.Stringer to print and log Range properly
@@ -180,6 +186,34 @@ func (r Range) Flip(ranges []Range) []Range {
 	rngs := MergeOverlappingRanges(ranges)
 
 	return r.flipValidRanges(rngs)
+}
+
+func (r Range) MarshalJSON() ([]byte, error) {
+	data := marshalTime{
+		StartTime: r.st,
+		EndTime:   r.End(),
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return nil, err
+	}
+
+	return jsonData, nil
+}
+
+func (r *Range) UnmarshalJSON(jsonData []byte) error {
+	var data marshalTime
+
+	if err := json.Unmarshal(jsonData, &data); err != nil {
+		return err
+	}
+
+	r.st = data.StartTime
+	r.dur = data.EndTime.Sub(data.StartTime)
+
+	return nil
 }
 
 func (r Range) flipValidRanges(ranges []Range) []Range {
